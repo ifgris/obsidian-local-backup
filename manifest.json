@@ -1,11 +1,16 @@
 {
 	"id": "obsidian-local-backup",
 	"name": "Local Backup",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "A local backup plugin for Obsidian.",
+	"description": "Automatically creates a backup of the vault when Obsidian is closed.",
 	"author": "GC Chen",
 	"authorUrl": "https://github.com.cgcel/obsidian-local-backup",
 	"fundingUrl": "https://github.com/cgcel/obsidian-local-backup",
-	"isDesktopOnly": true
+	"isDesktopOnly": true,
+	"main": "main.js",
+	"tags": ["backup"],
+	"entrypoints": {
+    	"main": "./main.js"
+  	}
 }
