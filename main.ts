@@ -1,41 +1,43 @@
 import { Notice, Plugin } from 'obsidian';
-import { createWriteStream } from 'fs';
 import { join } from 'path';
 import * as path from 'path';
-// import { Archiver } from 'archiver';
-// import * as archiver from 'archiver';
+import { copy } from 'fs-extra';
+import { mkdir } from 'fs';
 
-new Notice('Hello, you!');
 
 export default class AutoBackupOnClosePlugin extends Plugin {
-	onload() {
-		console.log('loading plugin')
-		this.app.workspace.on('file-open', this.handleWindowClose.bind(this));
+	async onload() {
+		// console.log('loading plugin')
+		this.app.workspace.on('quit', this.backupRepository.bind(this));
 	}
 
-	handleWindowClose() {
+	async backupRepository() {
 		try {
 			const vaultName = this.app.vault.getName();
 			const currentDate = new Date().toISOString().split('T')[0];
-			const zipFileName = `${vaultName}-${currentDate}.zip`;
+			const backupFolderName = `${vaultName}-Backup-${currentDate}`;
 			const vaultPath = (this.app.vault.adapter as any).basePath;
 			const parentDir = path.dirname(vaultPath);
-			console.log(join(parentDir, zipFileName));
+			const backupFolderPath = join(parentDir, backupFolderName);
+			console.log(backupFolderPath);
 
-			const output = createWriteStream(join(parentDir, zipFileName));
-			const archiver = require('archiver');
-			const archive = archiver('zip', {
-				zlib: { level: 9 }
-			});
+			mkdir(backupFolderPath, { recursive: true }, (err) => {
+				if (err) {
+				  console.error('Failed to create directory:', err);
+				} else {
+				  console.log('Directory created successfully');
+				}
+			  });
+			await copy(vaultPath, backupFolderPath);
 
-			archive.pipe(output);
-			archive.directory(vaultPath, false);
-			archive.finalize();
-
-			new Notice(`Vault backup created: ${zipFileName}`);
+			new Notice(`Repository backup created: ${backupFolderName}`);
 		} catch (error) {
-			new Notice(`Failed to create vault backup: ${error}`);
-			console.log(error)
+			new Notice(`Failed to create repository backup: ${error}`);
+			console.log(error);
 		}
+	}
+
+	onunload() {
+		console.log('Backup plugin unloaded');
 	}
 }
