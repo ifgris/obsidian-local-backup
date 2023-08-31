@@ -8,7 +8,8 @@ import { mkdir } from 'fs';
 export default class AutoBackupOnClosePlugin extends Plugin {
 	async onload() {
 		// console.log('loading plugin')
-		this.app.workspace.on('quit', this.backupRepository.bind(this));
+		// this.app.workspace.on('ready', this.backupRepository.bind(this));
+		await this.backupRepository();
 	}
 
 	async backupRepository() {

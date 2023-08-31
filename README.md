@@ -2,7 +2,7 @@
 
 ![GitHub](https://img.shields.io/github/license/cgcel/obsidian-local-backup)
 
-Automatically creates a backup of the vault when Obsidian closed.
+Automatically creates a backup of the vault on Obsidian starts.
 
 ## Installation
 
