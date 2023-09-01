@@ -27,4 +27,4 @@ Automatically creates a backup of the vault on Obsidian starts.
 
 ## License
 
-**Obsidian Local Backup** is licensed under the MIT license. Refer to [LICENSE](https://github.com/cgcel/obsidian-local-backup/LICENSE) for more information.
+**Obsidian Local Backup** is licensed under the MIT license. Refer to [LICENSE](https://github.com/cgcel/obsidian-local-backup/blob/master/LICENSE) for more information.
