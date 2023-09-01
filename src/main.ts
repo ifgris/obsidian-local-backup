@@ -8,7 +8,7 @@ import { mkdir } from 'fs';
 export default class AutoBackupOnClosePlugin extends Plugin {
 	async onload() {
 		// console.log('loading plugin')
-		// this.app.workspace.on('ready', this.backupRepository.bind(this));
+		// this.app.workspace.on('window-close', await this.backupRepository.bind(this));
 		await this.backupRepository();
 	}
 
@@ -24,11 +24,12 @@ export default class AutoBackupOnClosePlugin extends Plugin {
 
 			mkdir(backupFolderPath, { recursive: true }, (err) => {
 				if (err) {
-				  console.error('Failed to create directory:', err);
+					console.error('Failed to create directory:', err);
 				} else {
-				  console.log('Directory created successfully');
+					console.log('Directory created successfully');
 				}
-			  });
+			});
+			// const copy = require("fs-extra")
 			await copy(vaultPath, backupFolderPath);
 
 			new Notice(`Repository backup created: ${backupFolderName}`);
@@ -38,7 +39,7 @@ export default class AutoBackupOnClosePlugin extends Plugin {
 		}
 	}
 
-	onunload() {
+	async onunload() {
 		console.log('Backup plugin unloaded');
 	}
 }

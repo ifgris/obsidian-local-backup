@@ -8,9 +8,9 @@ Automatically creates a backup of the vault on Obsidian starts.
 
 ### Install from plugin store
 
-- Search `obsidian-local-backup` at Obsidian Community Plugins and install it.
-- Enable obsidian-local-backup.
-- The backup generates when Obsidian closed.
+- Search `Local Backup` at Obsidian Community Plugins and install it.
+- Enable `Local Backup`.
+- The backup generates on Obsidian starts.
 
 ### Manually installing the plugin
 
