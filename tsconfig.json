@@ -17,16 +17,10 @@
 			"ES5",
 			"ES6",
 			"ES7"
-		],
-		"paths": {
-			"@/*": [
-				"src/*"
-			]
-		},
+		]
 	},
 	"include": [
-		// "**/*.ts",
-		"src/**/*"
+		"**/*.ts"
 	],
 	"exclude": [
 		"node_modules"
