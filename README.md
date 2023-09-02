@@ -29,7 +29,8 @@ Automatically creates a backup of the vault on Obsidian starts.
 
 - [ ] Archive the backup dictionary to save disk memory.
 - [ ] Customize the backup keeping days.
-- [ ] Add a command to create a backup.
+- [x] Add a command to create a backup.
+- [x] Backup on startup toggle
 
 ## License
 

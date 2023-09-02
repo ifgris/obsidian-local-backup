@@ -6,20 +6,22 @@ import { mkdir } from 'fs';
 
 
 interface LocalBackupPluginSettings {
-	mySetting: string;
+	startupSetting: boolean;
 }
 
 const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
-	mySetting: 'default'
+	startupSetting: false
 }
 
 export default class LocalBackupPlugin extends Plugin {
 	settings: LocalBackupPluginSettings;
 
 	async onload() {
+		await this.loadSettings();
+		
 		// console.log('loading plugin')
 		// this.app.workspace.on('window-close', await this.backupRepository.bind(this));
-		await this.backupVaultAsync();
+		// await this.backupVaultAsync();
 
 		// Run local backup command
 		this.addCommand({
@@ -31,7 +33,7 @@ export default class LocalBackupPlugin extends Plugin {
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new LocalBackupSettingTab(this.app, this));
 	}
 
 	async backupVaultAsync() {
@@ -76,6 +78,9 @@ export default class LocalBackupPlugin extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		if (this.settings.startupSetting){
+			await this.backupVaultAsync();
+		}
 	}
 
 	async saveSettings() {
@@ -83,7 +88,7 @@ export default class LocalBackupPlugin extends Plugin {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
+class LocalBackupSettingTab extends PluginSettingTab {
 	plugin: LocalBackupPlugin;
 
 	constructor(app: App, plugin: LocalBackupPlugin) {
@@ -97,14 +102,14 @@ class SampleSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
+			.setName('Backup once on startup')
+			.setDesc('Run local backup once on Obsidian starts.')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.startupSetting)
 				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
+					this.plugin.settings.startupSetting = value;
 					await this.plugin.saveSettings();
+					// await this.plugin.saveData(this.plugin.settings);
 				}));
 	}
 }
