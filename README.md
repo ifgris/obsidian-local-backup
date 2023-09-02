@@ -1,4 +1,4 @@
-# Obsidian Local Backup Plugin
+# Local Backup
 
 ![GitHub](https://img.shields.io/github/license/cgcel/obsidian-local-backup)
 
