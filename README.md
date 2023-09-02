@@ -25,6 +25,12 @@ Automatically creates a backup of the vault on Obsidian starts.
 - `npm i` or `yarn` to install dependencies.
 - `npm run dev` to start compilation in watch mode.
 
+## Todo
+
+- [ ] Archive the backup dictionary to save disk memory.
+- [ ] Customize the backup keeping days.
+- [ ] Add a command to create a backup.
+
 ## License
 
 **Obsidian Local Backup** is licensed under the MIT license. Refer to [LICENSE](https://github.com/cgcel/obsidian-local-backup/blob/master/LICENSE) for more information.
