@@ -2,7 +2,13 @@
 
 ![GitHub](https://img.shields.io/github/license/cgcel/obsidian-local-backup)
 
-Automatically creates a backup of the vault.
+Automatically creates a local backup of the vault.
+
+## Features
+
+- Backup on startup
+- Setup backups'lifecycle
+- Setup custom output path
 
 ## Installation
 
