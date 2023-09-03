@@ -3,7 +3,7 @@ import { join } from 'path';
 import * as path from 'path';
 import { copy } from 'fs-extra';
 import { mkdir } from 'fs';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 
 
 interface LocalBackupPluginSettings {
@@ -24,9 +24,7 @@ export default class LocalBackupPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// console.log('loading plugin')
 		// this.app.workspace.on('window-close', await this.backupRepository.bind(this));
-		// await this.backupVaultAsync();
 
 		// Run local backup command
 		this.addCommand({
@@ -183,7 +181,7 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 				console.log(`backupDate: ${datePart}`)
 				const parsedDate = new Date(datePart);
 
-				if (parsedDate < currentDate){
+				if (parsedDate < currentDate) {
 					fs.rmdir(folderPath, { recursive: true }, (err) => {
 						if (err) {
 							console.error(err);
