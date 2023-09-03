@@ -123,7 +123,7 @@ class LocalBackupSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Backups lifecycle')
-			.setDesc('Set local backup kepping days.')
+			.setDesc('Set local backup keeping days.')
 			.addText(toggle => toggle
 				.setValue(this.plugin.settings.lifecycleSetting)
 				.onChange(async (value) => {
