@@ -21,7 +21,7 @@ Automatically creates a local backup of the vault.
 
 - Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
 
-## Contribution
+## Contributing
 
 ### Build
 
