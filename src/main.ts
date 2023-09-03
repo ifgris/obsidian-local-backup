@@ -61,9 +61,9 @@ export default class LocalBackupPlugin extends Plugin {
 			// const copy = require("fs-extra")
 			await copy(vaultPath, backupFolderPath); // copy vault to target path
 
-			new Notice(`Repository backup created: ${backupFolderPath}`);
+			new Notice(`Vault backup created: ${backupFolderPath}`);
 		} catch (error) {
-			new Notice(`Failed to create repository backup: ${error}`);
+			new Notice(`Failed to create vault backup: ${error}`);
 			console.log(error);
 		}
 	}
