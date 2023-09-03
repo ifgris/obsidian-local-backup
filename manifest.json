@@ -3,7 +3,7 @@
 	"name": "Local Backup",
 	"version": "0.0.3",
 	"minAppVersion": "0.15.0",
-	"description": "Automatically creates a backup of the vault on Obsidian starts.",
+	"description": "Automatically creates a local backup of the vault.",
 	"author": "GC Chen",
 	"authorUrl": "https://github.com.cgcel/obsidian-local-backup",
 	"fundingUrl": "https://www.buymeacoffee.com/cgcel",
