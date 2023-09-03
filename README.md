@@ -2,7 +2,7 @@
 
 ![GitHub](https://img.shields.io/github/license/cgcel/obsidian-local-backup)
 
-Automatically creates a backup of the vault on Obsidian starts.
+Automatically creates a backup of the vault.
 
 ## Installation
 
@@ -10,7 +10,6 @@ Automatically creates a backup of the vault on Obsidian starts.
 
 - Search `Local Backup` at Obsidian Community Plugins and install it.
 - Enable `Local Backup`.
-- The backup generates on Obsidian starts.
 
 ### Manually installing the plugin
 
@@ -27,10 +26,11 @@ Automatically creates a backup of the vault on Obsidian starts.
 
 ## Todo
 
+- [x] Backup on startup.
 - [ ] Archive the backup dictionary to save disk memory.
-- [ ] Customize the backup keeping days.
+- [x] Customize the backup lifecycle.
+- [x] Customize the backup storage path.
 - [x] Add a command to create a backup.
-- [x] Backup on startup toggle
 
 ## License
 
