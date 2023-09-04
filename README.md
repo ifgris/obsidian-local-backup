@@ -10,6 +10,18 @@ Automatically creates a local backup of the vault.
 - Setup backups'lifecycle
 - Setup custom output path
 
+## How to use
+
+### Custom the plugin setting page
+
+![plugin-setting](screenshot/plugin-setting.png)
+
+### Run a local backup command
+
+Enter the command panel using `Ctrl + p`.
+
+![run-command](screenshot/run-command.png)
+
 ## Installation
 
 ### Install from plugin store
