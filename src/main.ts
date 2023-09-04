@@ -120,8 +120,8 @@ class LocalBackupSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Backups lifecycle')
-			.setDesc('Set local backup keeping days.')
+			.setName('Backup lifecycle (Days)')
+			.setDesc('Set local backup keeping days. (0 -- Infinity)')
 			.addText(toggle => toggle
 				.setValue(this.plugin.settings.lifecycleSetting)
 				.onChange(async (value) => {
@@ -157,6 +157,11 @@ function getDefaultPath(): string {
 function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 
 	console.log('Run auto delete method')
+
+	if (parseInt(lifecycleSetting) == 0){
+		return;
+	}
+
 	const vaultName = this.app.vault.getName();
 	const currentDate = new Date();
 	currentDate.setDate(currentDate.getDate() - parseInt(lifecycleSetting));
