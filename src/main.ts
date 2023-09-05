@@ -1,4 +1,4 @@
-import { App, Notice, Plugin } from 'obsidian';
+import { Notice, Plugin } from 'obsidian';
 import { join } from 'path';
 import * as path from 'path';
 import { copy } from 'fs-extra';
