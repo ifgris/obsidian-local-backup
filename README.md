@@ -45,10 +45,14 @@ Enter the command panel using `Ctrl + p`.
 ## Todo
 
 - [x] Backup on startup.
-- [ ] Archive the backup dictionary to save disk memory.
+- [x] Archive the backup dictionary to save disk memory.
 - [x] Customize the backup lifecycle.
 - [x] Customize the backup storage path.
 - [x] Add a command to create a backup.
+
+## Reference
+
+- [adm-zip](https://github.com/cthackers/adm-zip)
 
 ## License
 
