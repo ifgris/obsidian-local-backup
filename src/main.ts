@@ -1,8 +1,6 @@
 import { Notice, Plugin } from 'obsidian';
 import { join } from 'path';
 import * as path from 'path';
-import { copy } from 'fs-extra';
-import { mkdir } from 'fs';
 import * as fs from 'fs-extra';
 import { LocalBackupSettingTab } from './settings';
 
@@ -31,8 +29,9 @@ export default class LocalBackupPlugin extends Plugin {
 		this.addCommand({
 			id: 'run-local-backup',
 			name: 'Run local backup',
-			callback: () => {
-				this.backupVaultAsync();
+			callback: async () => {
+				// this.backupVaultAsync();
+				await this.archiveVaultAsync();
 			}
 		});
 
@@ -40,36 +39,25 @@ export default class LocalBackupPlugin extends Plugin {
 		this.addSettingTab(new LocalBackupSettingTab(this.app, this));
 	}
 
-	async backupVaultAsync() {
+	/**
+	 * Archive vault method
+	 */
+	async archiveVaultAsync() {
 		try {
 			const vaultName = this.app.vault.getName();
 			const currentDate = new Date().toISOString().split('T')[0];
-			const backupFolderName = `${vaultName}-Backup-${currentDate}`;
+			// const backupFolderName = `${vaultName}-Backup-${currentDate}`;
+			const backupZipName = `${vaultName}-Backup-${currentDate}.zip`;
 			const vaultPath = (this.app.vault.adapter as any).basePath;
 			const parentDir = this.settings.savePathSetting;
-			const backupFolderPath = join(parentDir, backupFolderName);
-			// console.log(backupFolderPath);
+			// const backupFolderPath = join(parentDir, backupFolderName);
+			const backupZipPath = join(parentDir, backupZipName);
 
-			mkdir(backupFolderPath, { recursive: true }, (err) => {
-				if (err) {
-					console.error('Failed to create directory:', err);
-				} else {
-					console.log('Directory created successfully');
-				}
-			});
-			// const copy = require("fs-extra")
-			await copy(vaultPath, backupFolderPath); // copy vault to target path
-
-			new Notice(`Vault backup created: ${backupFolderPath}`);
-		} catch (error) {
-			new Notice(`Failed to create vault backup: ${error}`);
-			console.log(error);
-		}
-	}
-
-	async archiveVaultAsync() {
-		try {
-			// ...
+			const AdmZip = require("adm-zip");
+			const zip = new AdmZip();
+			zip.addLocalFolder(vaultPath);
+			zip.writeZip(backupZipPath);
+			new Notice(`Vault backup created: ${backupZipPath}`);
 		} catch (error) {
 			new Notice(`Failed to create repository backup: ${error}`);
 			console.log(error);
@@ -85,7 +73,8 @@ export default class LocalBackupPlugin extends Plugin {
 
 		// run startup codes.
 		if (this.settings.startupSetting) {
-			await this.backupVaultAsync();
+			// await this.backupVaultAsync();
+			await this.archiveVaultAsync();
 		}
 
 		// run auto delete method
@@ -134,27 +123,27 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 
 		files.forEach((file) => {
 			console.log(file)
-			const folderPath = path.join(savePathSetting, file);
-			const stats = fs.statSync(folderPath);
+			const filePath = path.join(savePathSetting, file);
+			const stats = fs.statSync(filePath);
 
-			if (stats.isDirectory() && file.contains(vaultBackupDirFormat)) {
-				const datePart = file.replace('TestVault-Backup-', '');
-				console.log(`backupDate: ${datePart}`)
-				const parsedDate = new Date(datePart);
+			if (stats.isFile() && file.contains(vaultBackupDirFormat)) {
+				const regex = /(\d{4}-\d{2}-\d{2})/;
+				const match = file.match(regex);
 
-				if (parsedDate < currentDate) {
-					fs.rmdir(folderPath, { recursive: true }, (err) => {
-						if (err) {
-							console.error(err);
-						} else {
-							console.log(`Deleted folder: ${folderPath}`);
-						}
-					});
+				if (match && match.length > 1) {
+					const dateStr = match[1];
+					console.log(dateStr);
+
+					const parsedDate = new Date(dateStr);
+	
+					if (parsedDate < currentDate) {
+						fs.remove(filePath);
+					}
+				} else {
+					console.log("DateStr Not Found.");
 				}
-
 			}
 		});
 	});
 
 }
-
