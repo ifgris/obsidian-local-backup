@@ -43,5 +43,25 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 					this.plugin.settings.savePathSetting = value;
 					await this.plugin.saveSettings();
 				}));
+		
+		new Setting(containerEl)
+			.setName('Toggle scheduled task')
+			.setDesc('Backup at specified intervals.')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.intervalToggleSetting)
+				.onChange(async (value) => {
+					this.plugin.settings.intervalToggleSetting = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Interval settings')
+			.setDesc('Set interval (minutes).')
+			.addText(toggle => toggle
+				.setValue(this.plugin.settings.intervalValueSetting)
+				.onChange(async (value) => {
+					this.plugin.settings.intervalValueSetting = value;
+					await this.plugin.saveSettings();
+				}));
 	}
 }

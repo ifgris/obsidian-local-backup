@@ -9,16 +9,21 @@ interface LocalBackupPluginSettings {
 	startupSetting: boolean;
 	lifecycleSetting: string;
 	savePathSetting: string;
+	intervalToggleSetting: boolean;
+	intervalValueSetting: string;
 }
 
 const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	startupSetting: false,
 	lifecycleSetting: '3',
-	savePathSetting: getDefaultPath()
+	savePathSetting: getDefaultPath(),
+	intervalToggleSetting: false,
+	intervalValueSetting: '10'
 }
 
 export default class LocalBackupPlugin extends Plugin {
 	settings: LocalBackupPluginSettings;
+	intervalId: NodeJS.Timeout | null = null;
 
 	async onload() {
 		await this.loadSettings();
@@ -37,6 +42,12 @@ export default class LocalBackupPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new LocalBackupSettingTab(this.app, this));
+
+		// Start the interval if intervalToggleSetting is true and intervalValueSetting is a valid number
+        if (this.settings.intervalToggleSetting && !isNaN(parseInt(this.settings.intervalValueSetting))) {
+            const intervalMinutes = parseInt(this.settings.intervalValueSetting);
+            this.startAutoBackupInterval(intervalMinutes);
+        }
 	}
 
 	/**
@@ -63,6 +74,33 @@ export default class LocalBackupPlugin extends Plugin {
 			console.log(error);
 		}
 	}
+
+	/**
+     * Start an interval to run archiveVaultAsync method at regular intervals
+     * @param intervalMinutes The interval in minutes
+     */
+    startAutoBackupInterval(intervalMinutes: number) {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+        }
+
+        this.intervalId = setInterval(async () => {
+            await this.archiveVaultAsync();
+        }, intervalMinutes * 60 * 1000); // Convert minutes to milliseconds
+
+        new Notice(`Auto backup interval started: Running every ${intervalMinutes} minutes.`);
+    }
+
+	/**
+     * Stop the auto backup interval
+     */
+    stopAutoBackupInterval() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+            new Notice("Auto backup interval stopped.");
+        }
+    }
 
 	async onunload() {
 		console.log('Local Backup unloaded');
