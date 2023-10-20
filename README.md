@@ -1,6 +1,8 @@
 # Local Backup
 
 ![GitHub](https://img.shields.io/github/license/cgcel/obsidian-local-backup)
+![Github all releases](https://img.shields.io/github/downloads/cgcel/obsidian-local-backup/total.svg)
+![GitLab latest release](https://badgen.net/github/release/cgcel/obsidian-local-backup)
 
 Automatically creates a local backup of the vault.
 
@@ -8,12 +10,12 @@ Automatically creates a local backup of the vault.
 
 - Backup on startup
 - Setup backups' lifecycle
-- Setup custom output path
-- Inteval backup
+- Customize output path
+- Inteval backups
 
 ## How to use
 
-### Custom the plugin setting page
+### Setup the plugin
 
 ![plugin-setting](screenshot/plugin-setting.png)
 
@@ -33,10 +35,15 @@ Enter the command panel using `Ctrl + p`.
 
 - Search `Local Backup` at Obsidian Community Plugins and install it.
 - Enable `Local Backup`.
+- [Setup](#how-to-use) `Local Backup`.
+- Apply settings or restart Obsidian.
+- Enjoy! 🎉
 
 ### Manually installing the plugin
 
 - Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+- Open Obsidian and enable `Local Backup`.
+- Follow the [guiding](#install-from-plugin-store) above.
 
 ## Contributing
 
