@@ -19,7 +19,7 @@ Automatically creates a local backup of the vault.
 
 > *To apply settings immediately, click the `Apply settings` button.*
 
-> *If you turn on interval backups, it is recommended to set a reasonable interval, e.g. >=10min, because this plugin costs CPU resources, backup frequently will cause lagging.*
+> *If you turn on interval backups, it is recommended to set a reasonable interval, e.g. >=10min, this plugin costs CPU resources and Disk I/O resources, backup frequently will cause lagging.*
 
 ### Run a local backup command
 
