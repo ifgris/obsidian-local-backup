@@ -17,7 +17,9 @@ Automatically creates a local backup of the vault.
 
 ![plugin-setting](screenshot/plugin-setting.png)
 
-> _To apply settings immediately, click the `Apply settings` button._
+> *To apply settings immediately, click the `Apply settings` button.*
+
+> *If you turn on interval backups, it is recommended to set a reasonable interval, e.g. >=10min, because this plugin costs CPU resources, backup frequently will cause lagging.*
 
 ### Run a local backup command
 
@@ -53,6 +55,8 @@ Enter the command panel using `Ctrl + p`.
 - [x] Customize the backup storage path.
 - [x] Add a command to create a backup.
 - [x] Add interval backup.
+- [ ] Backup notes without `/.obsidian`.
+- [ ] More customization in Settings page.
 
 ## Reference
 
