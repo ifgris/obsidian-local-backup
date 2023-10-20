@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
 import LocalBackupPlugin from './main';
 
 export class LocalBackupSettingTab extends PluginSettingTab {
@@ -43,7 +43,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 					this.plugin.settings.savePathSetting = value;
 					await this.plugin.saveSettings();
 				}));
-		
+
 		new Setting(containerEl)
 			.setName('Toggle scheduled task')
 			.setDesc('Backup at specified intervals.')
@@ -63,5 +63,15 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 					this.plugin.settings.intervalValueSetting = value;
 					await this.plugin.saveSettings();
 				}));
+
+		new Setting(containerEl)
+			.addButton(btn => btn
+				.setTooltip('Apply settings now')
+				.setButtonText('Apply settings')
+				.onClick(async () => { 
+					new Notice(`Applying Local Backup settings.`);
+					await this.plugin.onload(); 
+				})
+			);
 	}
 }
