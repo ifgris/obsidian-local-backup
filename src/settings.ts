@@ -45,8 +45,8 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Toggle scheduled task')
-			.setDesc('Backup at specified intervals.')
+			.setName('Interval backups')
+			.setDesc('The switch of interval backups')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.intervalToggleSetting)
 				.onChange(async (value) => {
@@ -55,7 +55,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Interval settings')
+			.setName('Backup intervals')
 			.setDesc('Set interval (minutes).')
 			.addText(toggle => toggle
 				.setValue(this.plugin.settings.intervalValueSetting)
