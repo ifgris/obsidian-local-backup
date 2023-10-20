@@ -48,6 +48,9 @@ export default class LocalBackupPlugin extends Plugin {
             const intervalMinutes = parseInt(this.settings.intervalValueSetting);
             this.startAutoBackupInterval(intervalMinutes);
         }
+		else if (!this.settings.intervalToggleSetting){
+			this.stopAutoBackupInterval();
+		}
 	}
 
 	/**
