@@ -43,14 +43,7 @@ export default class LocalBackupPlugin extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new LocalBackupSettingTab(this.app, this));
 
-		// Start the interval if intervalToggleSetting is true and intervalValueSetting is a valid number
-        if (this.settings.intervalToggleSetting && !isNaN(parseInt(this.settings.intervalValueSetting))) {
-            const intervalMinutes = parseInt(this.settings.intervalValueSetting);
-            this.startAutoBackupInterval(intervalMinutes);
-        }
-		else if (!this.settings.intervalToggleSetting){
-			this.stopAutoBackupInterval();
-		}
+        await this.applySettings();
 	}
 
 	/**
@@ -124,6 +117,23 @@ export default class LocalBackupPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	/**
+	 * apply settings
+	 */
+	async applySettings(){
+		// load settings
+		await this.loadSettings();
+
+		// Start the interval if intervalToggleSetting is true and intervalValueSetting is a valid number
+		if (this.settings.intervalToggleSetting && !isNaN(parseInt(this.settings.intervalValueSetting))) {
+            const intervalMinutes = parseInt(this.settings.intervalValueSetting);
+            this.startAutoBackupInterval(intervalMinutes);
+        }
+		else if (!this.settings.intervalToggleSetting){
+			this.stopAutoBackupInterval();
+		}
 	}
 }
 
