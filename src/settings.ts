@@ -30,7 +30,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			.addText(text => text
 				.setValue(this.plugin.settings.lifecycleSetting)
 				.onChange(async (value) => {
-					
+
 					// add limits
 					const numericValue = parseFloat(value);
 					if (isNaN(numericValue) || numericValue < 0) {
@@ -49,6 +49,16 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.savePathSetting)
 				.onChange(async (value) => {
 					this.plugin.settings.savePathSetting = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Customize file name')
+			.setDesc('Customizing zip file name. Default: {vaultName}-Backup')
+			.addText(text => text
+				.setValue(this.plugin.settings.customizeNameSetting)
+				.onChange(async (value) => {
+					this.plugin.settings.customizeNameSetting = value;
 					await this.plugin.saveSettings();
 				}));
 
@@ -84,7 +94,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			.addButton(btn => btn
 				.setTooltip('Apply settings now')
 				.setButtonText('Apply settings')
-				.onClick(async () => { 
+				.onClick(async () => {
 					new Notice(`Applying Local Backup settings.`);
 					await this.plugin.applySettings();
 				})

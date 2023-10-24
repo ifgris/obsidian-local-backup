@@ -9,6 +9,7 @@ interface LocalBackupPluginSettings {
 	startupSetting: boolean;
 	lifecycleSetting: string;
 	savePathSetting: string;
+	customizeNameSetting: string;
 	intervalToggleSetting: boolean;
 	intervalValueSetting: string;
 }
@@ -17,6 +18,7 @@ const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	startupSetting: false,
 	lifecycleSetting: '3',
 	savePathSetting: getDefaultPath(),
+	customizeNameSetting: getDefaultName(),
 	intervalToggleSetting: false,
 	intervalValueSetting: '10'
 }
@@ -51,10 +53,10 @@ export default class LocalBackupPlugin extends Plugin {
 	 */
 	async archiveVaultAsync() {
 		try {
-			const vaultName = this.app.vault.getName();
+			const vaultName = this.settings.customizeNameSetting;
 			const currentDate = new Date().toISOString().split('T')[0];
 			// const backupFolderName = `${vaultName}-Backup-${currentDate}`;
-			const backupZipName = `${vaultName}-Backup-${currentDate}.zip`;
+			const backupZipName = `${vaultName}-${currentDate}.zip`;
 			const vaultPath = (this.app.vault.adapter as any).basePath;
 			const parentDir = this.settings.savePathSetting;
 			// const backupFolderPath = join(parentDir, backupFolderName);
@@ -145,6 +147,15 @@ function getDefaultPath(): string {
 	const defaultPath = path.dirname((this.app.vault.adapter as any).basePath)
 	// this.settings.savePathSetting = defaultPath
 	return defaultPath;
+}
+
+/**
+ * get default backup name
+ * @returns 
+ */
+function getDefaultName(): string {
+	const vaultName = this.app.vault.getName();
+	return `${vaultName}-Backup`
 }
 
 /**
