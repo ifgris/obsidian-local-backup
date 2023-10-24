@@ -27,9 +27,17 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Backup lifecycle (Days)')
 			.setDesc('Set local backup keeping days. (0 -- Infinity)')
-			.addText(toggle => toggle
+			.addText(text => text
 				.setValue(this.plugin.settings.lifecycleSetting)
 				.onChange(async (value) => {
+					
+					// add limits
+					const numericValue = parseFloat(value);
+					if (isNaN(numericValue) || numericValue < 0) {
+						new Notice('Backup lifecycle must be a non-negative number.');
+						return;
+					}
+
 					this.plugin.settings.lifecycleSetting = value;
 					await this.plugin.saveSettings();
 				}));
@@ -37,7 +45,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Output path')
 			.setDesc('Setup backup storage path.')
-			.addText(toggle => toggle
+			.addText(text => text
 				.setValue(this.plugin.settings.savePathSetting)
 				.onChange(async (value) => {
 					this.plugin.settings.savePathSetting = value;
@@ -57,9 +65,17 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Backup intervals')
 			.setDesc('Set interval (minutes).')
-			.addText(toggle => toggle
+			.addText(text => text
 				.setValue(this.plugin.settings.intervalValueSetting)
 				.onChange(async (value) => {
+
+					// add limits
+					const numericValue = parseFloat(value);
+					if (isNaN(numericValue) || numericValue <= 0) {
+						new Notice('Backup intervals must be a positive number.');
+						return;
+					}
+
 					this.plugin.settings.intervalValueSetting = value;
 					await this.plugin.saveSettings();
 				}));
@@ -70,7 +86,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				.setButtonText('Apply settings')
 				.onClick(async () => { 
 					new Notice(`Applying Local Backup settings.`);
-					await this.plugin.onload(); 
+					await this.plugin.applySettings();
 				})
 			);
 	}
