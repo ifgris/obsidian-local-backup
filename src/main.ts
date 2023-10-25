@@ -48,6 +48,19 @@ export default class LocalBackupPlugin extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new LocalBackupSettingTab(this.app, this));
 
+		// run startup codes.
+		if (this.settings.startupSetting) {
+			// await this.backupVaultAsync();
+			await this.archiveVaultAsync();
+		}
+
+		// run auto delete method
+		autoDeleteBackups(
+			this.settings.savePathSetting,
+			this.settings.customizeNameSetting,
+			this.settings.lifecycleSetting
+		);
+
 		await this.applySettings();
 	}
 
@@ -116,19 +129,6 @@ export default class LocalBackupPlugin extends Plugin {
 			DEFAULT_SETTINGS,
 			await this.loadData()
 		);
-
-		// run startup codes.
-		if (this.settings.startupSetting) {
-			// await this.backupVaultAsync();
-			await this.archiveVaultAsync();
-		}
-
-		// run auto delete method
-		autoDeleteBackups(
-			this.settings.savePathSetting, 
-			this.settings.customizeNameSetting,
-			this.settings.lifecycleSetting
-		);
 	}
 
 	async saveSettings() {
@@ -136,7 +136,7 @@ export default class LocalBackupPlugin extends Plugin {
 	}
 
 	/**
-	 * apply settings
+	 * Apply settings
 	 */
 	async applySettings() {
 		// load settings
@@ -157,7 +157,7 @@ export default class LocalBackupPlugin extends Plugin {
 	}
 
 	/**
-	 * restore default settings
+	 * Restore default settings
 	 */
 	async restoreDefault() {
 		this.settings.startupSetting = DEFAULT_SETTINGS.startupSetting;
@@ -171,7 +171,7 @@ export default class LocalBackupPlugin extends Plugin {
 }
 
 /**
- * get path of current vault
+ * Get path of current vault
  * @returns
  */
 function getDefaultPath(): string {
@@ -181,7 +181,7 @@ function getDefaultPath(): string {
 }
 
 /**
- * get default backup name
+ * Get default backup name
  * @returns
  */
 function getDefaultName(): string {
@@ -191,7 +191,7 @@ function getDefaultName(): string {
 }
 
 /**
- * auto delete backups
+ * Auto delete backups
  */
 function autoDeleteBackups(savePathSetting: string, customizeNameSetting: string, lifecycleSetting: string) {
 	console.log("Run auto delete method");
@@ -211,28 +211,40 @@ function autoDeleteBackups(savePathSetting: string, customizeNameSetting: string
 		}
 
 		files.forEach((file) => {
-			console.log(file);
+			// console.log(file);
 			const filePath = path.join(savePathSetting, file);
 			const stats = fs.statSync(filePath);
+			const fileNameRegex = generateRegexFromCustomPattern(customizeNameSetting)
+			const matchFileName = file.match(fileNameRegex);
+			// console.log(matchFileName)
+			if (stats.isFile() && matchFileName != null) {
 
-			if (stats.isFile() && file.contains(customizeNameSetting)) {
-				const regex = /(\d{4}-\d{2}-\d{2})/;
-				const match = file.match(regex);
-
-				if (match && match.length > 1) {
-					const dateStr = match[1];
-					console.log(dateStr);
-
-					const parsedDate = new Date(dateStr);
-
-
-					if (parsedDate < currentDate) {
-						fs.remove(filePath);
-					}
-				} else {
-					console.log('DateStr Not Found.');
+				const stats = fs.statSync(filePath);
+				const parseTime = stats.birthtime;
+				const createDate = new Date(parseTime.getFullYear(), parseTime.getMonth(), parseTime.getDate());
+				if (createDate < currentDate) {
+					fs.remove(filePath);
 				}
 			}
 		});
 	});
+}
+
+/**
+ * Generate regex from custom pattern,
+ * @param customPattern 
+ * @returns 
+ */
+function generateRegexFromCustomPattern(customPattern: string): RegExp {
+	// Replace placeholders like %Y, %m, etc. with corresponding regex patterns
+	const regexPattern = customPattern
+		.replace(/%Y/g, '\\d{4}') // Year
+		.replace(/%m/g, '\\d{2}') // Month
+		.replace(/%d/g, '\\d{2}') // Day
+		.replace(/%H/g, '\\d{2}') // Hour
+		.replace(/%M/g, '\\d{2}') // Minute
+		.replace(/%S/g, '\\d{2}'); // Second
+
+	// Create a regular expression to match the custom pattern
+	return new RegExp(regexPattern);
 }
