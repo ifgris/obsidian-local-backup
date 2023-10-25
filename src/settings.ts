@@ -49,13 +49,25 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Output path")
-			.setDesc("Setup backup storage path.")
+			.setName("Windows output path")
+			.setDesc("Setup a Windows backup storage path.")
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.savePathSetting)
+					.setValue(this.plugin.settings.winSavePathSetting)
 					.onChange(async (value) => {
-						this.plugin.settings.savePathSetting = value;
+						this.plugin.settings.winSavePathSetting = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Linux/MacOS output path")
+			.setDesc("Setup a Unix backup storage path.")
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.unixSavePathSetting)
+					.onChange(async (value) => {
+						this.plugin.settings.unixSavePathSetting = value;
 						await this.plugin.saveSettings();
 					})
 			);
@@ -152,6 +164,6 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 					new Notice("Applying Local Backup settings.");
 					await this.plugin.applySettings();
 				})
-		);
+			);
 	}
 }
