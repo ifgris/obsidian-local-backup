@@ -11,7 +11,8 @@ import {
 interface LocalBackupPluginSettings {
 	startupSetting: boolean;
 	lifecycleSetting: string;
-	savePathSetting: string;
+	winSavePathSetting: string;
+	unixSavePathSetting: string;
 	customizeNameSetting: string;
 	intervalToggleSetting: boolean;
 	intervalValueSetting: string;
@@ -20,7 +21,8 @@ interface LocalBackupPluginSettings {
 const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	startupSetting: false,
 	lifecycleSetting: "3",
-	savePathSetting: getDefaultPath(),
+	winSavePathSetting: getDefaultPath(),
+	unixSavePathSetting: getDefaultPath(),
 	customizeNameSetting: getDefaultName(),
 	intervalToggleSetting: false,
 	intervalValueSetting: "10",
@@ -56,7 +58,8 @@ export default class LocalBackupPlugin extends Plugin {
 
 		// run auto delete method
 		autoDeleteBackups(
-			this.settings.savePathSetting,
+			this.settings.winSavePathSetting,
+			this.settings.unixSavePathSetting,
 			this.settings.customizeNameSetting,
 			this.settings.lifecycleSetting
 		);
@@ -75,9 +78,16 @@ export default class LocalBackupPlugin extends Plugin {
 				replaceDatePlaceholdersWithValues(fileName);
 			const backupZipName = `${fileNameWithDateValues}.zip`;
 			const vaultPath = (this.app.vault.adapter as any).basePath;
-			const parentDir = this.settings.savePathSetting;
+			const os = require("os");
+			const platform = os.platform();
+			let savePathSetting = "";
+			if (platform == "win32") {
+				savePathSetting = this.settings.winSavePathSetting;
+			} else if (platform == "linux" || platform == "darwin") {
+				savePathSetting = this.settings.unixSavePathSetting;
+			}
 			// const backupFolderPath = join(parentDir, backupFolderName);
-			const backupZipPath = join(parentDir, backupZipName);
+			const backupZipPath = join(savePathSetting, backupZipName);
 
 			const AdmZip = require('adm-zip');
 			const zip = new AdmZip();
@@ -162,7 +172,8 @@ export default class LocalBackupPlugin extends Plugin {
 	async restoreDefault() {
 		this.settings.startupSetting = DEFAULT_SETTINGS.startupSetting;
 		this.settings.lifecycleSetting = DEFAULT_SETTINGS.lifecycleSetting;
-		this.settings.savePathSetting = DEFAULT_SETTINGS.savePathSetting;
+		this.settings.winSavePathSetting = DEFAULT_SETTINGS.winSavePathSetting;
+		this.settings.unixSavePathSetting = DEFAULT_SETTINGS.unixSavePathSetting;
 		this.settings.customizeNameSetting = DEFAULT_SETTINGS.customizeNameSetting;
 		this.settings.intervalToggleSetting = DEFAULT_SETTINGS.intervalToggleSetting;
 		this.settings.intervalValueSetting = DEFAULT_SETTINGS.intervalValueSetting
@@ -193,7 +204,7 @@ function getDefaultName(): string {
 /**
  * Auto delete backups
  */
-function autoDeleteBackups(savePathSetting: string, customizeNameSetting: string, lifecycleSetting: string) {
+function autoDeleteBackups(winSavePathSetting: string, unixSavePathSetting: string, customizeNameSetting: string, lifecycleSetting: string) {
 	console.log("Run auto delete method");
 
 	if (parseInt(lifecycleSetting) == 0) {
@@ -204,6 +215,15 @@ function autoDeleteBackups(savePathSetting: string, customizeNameSetting: string
 	currentDate.setDate(currentDate.getDate() - parseInt(lifecycleSetting));
 
 	// deleting backups before the lifecycle
+	const os = require("os");
+	const platform = os.platform();
+	let savePathSetting = "";
+	if (platform == "win32") {
+		savePathSetting = winSavePathSetting;
+	} else if (platform == "linux" || platform == "darwin") {
+		savePathSetting = unixSavePathSetting;
+	}
+
 	fs.readdir(savePathSetting, (err, files) => {
 		if (err) {
 			console.error(err);
