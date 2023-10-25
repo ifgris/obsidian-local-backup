@@ -25,8 +25,8 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Backup lifecycle (Days)')
-			.setDesc('Set local backup keeping days. (0 -- Infinity)')
+			.setName('Backup history length')
+			.setDesc('Specify the number of days backups should be retained. (0 -- Infinity)')
 			.addText(text => text
 				.setValue(this.plugin.settings.lifecycleSetting)
 				.onChange(async (value) => {
@@ -53,8 +53,8 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Customize file name')
-			.setDesc('Customizing zip file name. Default: {vaultName}-Backup')
+			.setName('File name')
+			.setDesc('Name of the backup ZIP file. Default: {vaultName}-Backup')
 			.addText(text => text
 				.setValue(this.plugin.settings.customizeNameSetting)
 				.onChange(async (value) => {
@@ -64,7 +64,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Interval backups')
-			.setDesc('The switch of interval backups')
+			.setDesc('Enable to create backups at regular intervals')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.intervalToggleSetting)
 				.onChange(async (value) => {
@@ -73,8 +73,8 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName('Backup intervals')
-			.setDesc('Set interval (minutes).')
+			.setName('Backup frequency')
+			.setDesc('Set the frequency of backups in minutes (minutes).')
 			.addText(text => text
 				.setValue(this.plugin.settings.intervalValueSetting)
 				.onChange(async (value) => {
