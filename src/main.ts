@@ -1,9 +1,12 @@
-import { Notice, Plugin } from 'obsidian';
-import { join } from 'path';
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { LocalBackupSettingTab } from './settings';
-
+import { Notice, Plugin } from "obsidian";
+import { join } from "path";
+import * as path from "path";
+import * as fs from "fs-extra";
+import { LocalBackupSettingTab } from "./settings";
+import {
+	getDatePlaceholdersForISO,
+	replaceDatePlaceholdersWithValues,
+} from "./utils";
 
 interface LocalBackupPluginSettings {
 	startupSetting: boolean;
@@ -16,12 +19,12 @@ interface LocalBackupPluginSettings {
 
 const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	startupSetting: false,
-	lifecycleSetting: '3',
+	lifecycleSetting: "3",
 	savePathSetting: getDefaultPath(),
 	customizeNameSetting: getDefaultName(),
 	intervalToggleSetting: false,
-	intervalValueSetting: '10'
-}
+	intervalValueSetting: "10",
+};
 
 export default class LocalBackupPlugin extends Plugin {
 	settings: LocalBackupPluginSettings;
@@ -34,18 +37,18 @@ export default class LocalBackupPlugin extends Plugin {
 
 		// Run local backup command
 		this.addCommand({
-			id: 'run-local-backup',
-			name: 'Run local backup',
+			id: "run-local-backup",
+			name: "Run local backup",
 			callback: async () => {
 				// this.backupVaultAsync();
 				await this.archiveVaultAsync();
-			}
+			},
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new LocalBackupSettingTab(this.app, this));
 
-        await this.applySettings();
+		await this.applySettings();
 	}
 
 	/**
@@ -53,10 +56,11 @@ export default class LocalBackupPlugin extends Plugin {
 	 */
 	async archiveVaultAsync() {
 		try {
-			const vaultName = this.settings.customizeNameSetting;
-			const currentDate = new Date().toISOString().split('T')[0];
+			const fileName = this.settings.customizeNameSetting;
 			// const backupFolderName = `${vaultName}-Backup-${currentDate}`;
-			const backupZipName = `${vaultName}-${currentDate}.zip`;
+			const fileNameWithDateValues =
+				replaceDatePlaceholdersWithValues(fileName);
+			const backupZipName = `${fileNameWithDateValues}.zip`;
 			const vaultPath = (this.app.vault.adapter as any).basePath;
 			const parentDir = this.settings.savePathSetting;
 			// const backupFolderPath = join(parentDir, backupFolderName);
@@ -74,38 +78,44 @@ export default class LocalBackupPlugin extends Plugin {
 	}
 
 	/**
-     * Start an interval to run archiveVaultAsync method at regular intervals
-     * @param intervalMinutes The interval in minutes
-     */
-    startAutoBackupInterval(intervalMinutes: number) {
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-        }
+	 * Start an interval to run archiveVaultAsync method at regular intervals
+	 * @param intervalMinutes The interval in minutes
+	 */
+	startAutoBackupInterval(intervalMinutes: number) {
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+		}
 
-        this.intervalId = setInterval(async () => {
-            await this.archiveVaultAsync();
-        }, intervalMinutes * 60 * 1000); // Convert minutes to milliseconds
+		this.intervalId = setInterval(async () => {
+			await this.archiveVaultAsync();
+		}, intervalMinutes * 60 * 1000); // Convert minutes to milliseconds
 
-        new Notice(`Auto backup interval started: Running every ${intervalMinutes} minutes.`);
-    }
+		new Notice(
+			`Auto backup interval started: Running every ${intervalMinutes} minutes.`
+		);
+	}
 
 	/**
-     * Stop the auto backup interval
-     */
-    stopAutoBackupInterval() {
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-            this.intervalId = null;
-            new Notice("Auto backup interval stopped.");
-        }
-    }
+	 * Stop the auto backup interval
+	 */
+	stopAutoBackupInterval() {
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+			this.intervalId = null;
+			new Notice("Auto backup interval stopped.");
+		}
+	}
 
 	async onunload() {
-		console.log('Local Backup unloaded');
+		console.log("Local Backup unloaded");
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		this.settings = Object.assign(
+			{},
+			DEFAULT_SETTINGS,
+			await this.loadData()
+		);
 
 		// run startup codes.
 		if (this.settings.startupSetting) {
@@ -114,7 +124,10 @@ export default class LocalBackupPlugin extends Plugin {
 		}
 
 		// run auto delete method
-		autoDeleteBackups(this.settings.savePathSetting, this.settings.lifecycleSetting)
+		autoDeleteBackups(
+			this.settings.savePathSetting,
+			this.settings.lifecycleSetting
+		);
 	}
 
 	async saveSettings() {
@@ -124,16 +137,20 @@ export default class LocalBackupPlugin extends Plugin {
 	/**
 	 * apply settings
 	 */
-	async applySettings(){
+	async applySettings() {
 		// load settings
 		await this.loadSettings();
 
 		// Start the interval if intervalToggleSetting is true and intervalValueSetting is a valid number
-		if (this.settings.intervalToggleSetting && !isNaN(parseInt(this.settings.intervalValueSetting))) {
-            const intervalMinutes = parseInt(this.settings.intervalValueSetting);
-            this.startAutoBackupInterval(intervalMinutes);
-        }
-		else if (!this.settings.intervalToggleSetting){
+		if (
+			this.settings.intervalToggleSetting &&
+			!isNaN(parseInt(this.settings.intervalValueSetting))
+		) {
+			const intervalMinutes = parseInt(
+				this.settings.intervalValueSetting
+			);
+			this.startAutoBackupInterval(intervalMinutes);
+		} else if (!this.settings.intervalToggleSetting) {
 			this.stopAutoBackupInterval();
 		}
 	}
@@ -141,29 +158,29 @@ export default class LocalBackupPlugin extends Plugin {
 
 /**
  * get path of current vault
- * @returns 
+ * @returns
  */
 function getDefaultPath(): string {
-	const defaultPath = path.dirname((this.app.vault.adapter as any).basePath)
+	const defaultPath = path.dirname((this.app.vault.adapter as any).basePath);
 	// this.settings.savePathSetting = defaultPath
 	return defaultPath;
 }
 
 /**
  * get default backup name
- * @returns 
+ * @returns
  */
 function getDefaultName(): string {
 	const vaultName = this.app.vault.getName();
-	return `${vaultName}-Backup`
+	const defaultDatePlaceholders = getDatePlaceholdersForISO(true);
+	return `${vaultName}-Backup-${defaultDatePlaceholders}`;
 }
 
 /**
  * auto delete backups
  */
 function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
-
-	console.log('Run auto delete method')
+	console.log("Run auto delete method");
 
 	if (parseInt(lifecycleSetting) == 0) {
 		return;
@@ -174,7 +191,7 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 	currentDate.setDate(currentDate.getDate() - parseInt(lifecycleSetting));
 
 	// the vault backup naming template
-	const vaultBackupDirFormat = `${vaultName}-Backup-`
+	const vaultBackupDirFormat = `${vaultName}-Backup-`;
 
 	// deleting backups before the lifecycle
 	fs.readdir(savePathSetting, (err, files) => {
@@ -184,7 +201,7 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 		}
 
 		files.forEach((file) => {
-			console.log(file)
+			console.log(file);
 			const filePath = path.join(savePathSetting, file);
 			const stats = fs.statSync(filePath);
 
@@ -197,7 +214,7 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 					console.log(dateStr);
 
 					const parsedDate = new Date(dateStr);
-	
+
 					if (parsedDate < currentDate) {
 						fs.remove(filePath);
 					}
@@ -207,5 +224,4 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 			}
 		});
 	});
-
 }
