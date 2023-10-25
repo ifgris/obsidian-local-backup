@@ -27,21 +27,17 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Backup lifecycle (Days)")
-			.setDesc("Set local backup keeping days. (0 -- Infinity)")
-			.addText((text) =>
-				text
-					.setValue(this.plugin.settings.lifecycleSetting)
-					.onChange(async (value) => {
-						// add limits
-						const numericValue = parseFloat(value);
-						if (isNaN(numericValue) || numericValue < 0) {
-							new Notice(
-								"Backup lifecycle must be a non-negative number."
-							);
-							return;
-						}
-
+			.setName('Backup history length')
+			.setDesc('Specify the number of days backups should be retained. (0 -- Infinity)')
+			.addText(text => text
+				.setValue(this.plugin.settings.lifecycleSetting)
+				.onChange(async (value) => {
+					  // add limits
+            const numericValue = parseFloat(value);
+            if (isNaN(numericValue) || numericValue < 0) {
+              new Notice('Backup lifecycle must be a non-negative number.');
+              return;
+            }
 						this.plugin.settings.lifecycleSetting = value;
 						await this.plugin.saveSettings();
 					})
@@ -58,8 +54,8 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
-
-		const fileNameFragment = document.createDocumentFragment();
+    
+    const fileNameFragment = document.createDocumentFragment();
 		fileNameFragment.createDiv({
 			text: "Name of the backup ZIP file.",
 		});
@@ -91,28 +87,31 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 		});
 
 		new Setting(containerEl)
-			.setName("File name")
+			.setName('File name')
 			.setDesc(fileNameFragment)
-			.addText((text) =>
-				text
-					.setValue(this.plugin.settings.customizeNameSetting)
-					.onChange(async (value) => {
-						this.plugin.settings.customizeNameSetting = value;
-						await this.plugin.saveSettings();
-					})
-			);
+			.addText(text => text
+				.setValue(this.plugin.settings.customizeNameSetting)
+				.onChange(async (value) => {
+					this.plugin.settings.customizeNameSetting = value;
+					await this.plugin.saveSettings();
+				}));
 
 		new Setting(containerEl)
-			.setName("Interval backups")
-			.setDesc("The switch of interval backups")
-			.addToggle((toggle) =>
-				toggle
-					.setValue(this.plugin.settings.intervalToggleSetting)
-					.onChange(async (value) => {
-						this.plugin.settings.intervalToggleSetting = value;
-						await this.plugin.saveSettings();
-					})
-			);
+			.setName('Interval backups')
+			.setDesc('Enable to create backups at regular intervals')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.intervalToggleSetting)
+				.onChange(async (value) => {
+					this.plugin.settings.intervalToggleSetting = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Backup frequency')
+			.setDesc('Set the frequency of backups in minutes (minutes).')
+			.addText(text => text
+				.setValue(this.plugin.settings.intervalValueSetting)
+				.onChange(async (value) => {
 
 		new Setting(containerEl)
 			.setName("Backup intervals")
