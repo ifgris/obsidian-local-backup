@@ -102,14 +102,14 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				.setButtonText('Restore defaults')
 				.onClick(async () => {
 					await this.plugin.restoreDefault();
-					new Notice(`Settings restored to default.`);
+					new Notice('Settings restored to default.');
 				})
 			)
 			.addButton(btn => btn
 				.setTooltip('Apply settings now')
 				.setButtonText('Apply settings')
 				.onClick(async () => {
-					new Notice(`Applying Local Backup settings.`);
+					new Notice('Applying Local Backup settings.');
 					await this.plugin.applySettings();
 				})
 			);

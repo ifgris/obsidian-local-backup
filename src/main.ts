@@ -62,13 +62,13 @@ export default class LocalBackupPlugin extends Plugin {
 			// const backupFolderPath = join(parentDir, backupFolderName);
 			const backupZipPath = join(parentDir, backupZipName);
 
-			const AdmZip = require("adm-zip");
+			const AdmZip = require('adm-zip');
 			const zip = new AdmZip();
 			zip.addLocalFolder(vaultPath);
 			zip.writeZip(backupZipPath);
 			new Notice(`Vault backup created: ${backupZipPath}`);
 		} catch (error) {
-			new Notice(`Failed to create repository backup: ${error}`);
+			new Notice(`Failed to create vault backup: ${error}`);
 			console.log(error);
 		}
 	}
@@ -96,7 +96,7 @@ export default class LocalBackupPlugin extends Plugin {
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
 			this.intervalId = null;
-			new Notice("Auto backup interval stopped.");
+			new Notice('Auto backup interval stopped.');
 		}
 	}
 
@@ -114,7 +114,7 @@ export default class LocalBackupPlugin extends Plugin {
 		}
 
 		// run auto delete method
-		autoDeleteBackups(this.settings.savePathSetting, this.settings.lifecycleSetting)
+		autoDeleteBackups(this.settings.savePathSetting, this.settings.customizeNameSetting, this.settings.lifecycleSetting)
 	}
 
 	async saveSettings() {
@@ -174,7 +174,7 @@ function getDefaultName(): string {
 /**
  * auto delete backups
  */
-function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
+function autoDeleteBackups(savePathSetting: string, customizeNameSetting: string, lifecycleSetting: string) {
 
 	console.log('Run auto delete method')
 
@@ -182,12 +182,8 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 		return;
 	}
 
-	const vaultName = this.app.vault.getName();
 	const currentDate = new Date();
 	currentDate.setDate(currentDate.getDate() - parseInt(lifecycleSetting));
-
-	// the vault backup naming template
-	const vaultBackupDirFormat = `${vaultName}-Backup-`
 
 	// deleting backups before the lifecycle
 	fs.readdir(savePathSetting, (err, files) => {
@@ -201,7 +197,7 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 			const filePath = path.join(savePathSetting, file);
 			const stats = fs.statSync(filePath);
 
-			if (stats.isFile() && file.contains(vaultBackupDirFormat)) {
+			if (stats.isFile() && file.contains(customizeNameSetting)) {
 				const regex = /(\d{4}-\d{2}-\d{2})/;
 				const match = file.match(regex);
 
@@ -215,7 +211,7 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 						fs.remove(filePath);
 					}
 				} else {
-					console.log("DateStr Not Found.");
+					console.log('DateStr Not Found.');
 				}
 			}
 		});
