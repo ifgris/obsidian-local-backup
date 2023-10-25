@@ -53,6 +53,7 @@ Enter the command panel using `Ctrl + p`.
 - Make sure your NodeJS is at least v16 (`node --version`).
 - `npm i` or `yarn` to install dependencies.
 - `npm run dev` to start compilation in watch mode.
+- `npm run build` to build the `main.js` in `./build`.
 
 ## Todo
 
