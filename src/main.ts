@@ -45,7 +45,7 @@ export default class LocalBackupPlugin extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new LocalBackupSettingTab(this.app, this));
 
-        await this.applySettings();
+		await this.applySettings();
 	}
 
 	/**
@@ -74,31 +74,31 @@ export default class LocalBackupPlugin extends Plugin {
 	}
 
 	/**
-     * Start an interval to run archiveVaultAsync method at regular intervals
-     * @param intervalMinutes The interval in minutes
-     */
-    startAutoBackupInterval(intervalMinutes: number) {
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-        }
+	 * Start an interval to run archiveVaultAsync method at regular intervals
+	 * @param intervalMinutes The interval in minutes
+	 */
+	startAutoBackupInterval(intervalMinutes: number) {
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+		}
 
-        this.intervalId = setInterval(async () => {
-            await this.archiveVaultAsync();
-        }, intervalMinutes * 60 * 1000); // Convert minutes to milliseconds
+		this.intervalId = setInterval(async () => {
+			await this.archiveVaultAsync();
+		}, intervalMinutes * 60 * 1000); // Convert minutes to milliseconds
 
-        new Notice(`Auto backup interval started: Running every ${intervalMinutes} minutes.`);
-    }
+		new Notice(`Auto backup interval started: Running every ${intervalMinutes} minutes.`);
+	}
 
 	/**
-     * Stop the auto backup interval
-     */
-    stopAutoBackupInterval() {
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-            this.intervalId = null;
-            new Notice("Auto backup interval stopped.");
-        }
-    }
+	 * Stop the auto backup interval
+	 */
+	stopAutoBackupInterval() {
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+			this.intervalId = null;
+			new Notice("Auto backup interval stopped.");
+		}
+	}
 
 	async onunload() {
 		console.log('Local Backup unloaded');
@@ -124,18 +124,31 @@ export default class LocalBackupPlugin extends Plugin {
 	/**
 	 * apply settings
 	 */
-	async applySettings(){
+	async applySettings() {
 		// load settings
 		await this.loadSettings();
 
 		// Start the interval if intervalToggleSetting is true and intervalValueSetting is a valid number
 		if (this.settings.intervalToggleSetting && !isNaN(parseInt(this.settings.intervalValueSetting))) {
-            const intervalMinutes = parseInt(this.settings.intervalValueSetting);
-            this.startAutoBackupInterval(intervalMinutes);
-        }
-		else if (!this.settings.intervalToggleSetting){
+			const intervalMinutes = parseInt(this.settings.intervalValueSetting);
+			this.startAutoBackupInterval(intervalMinutes);
+		}
+		else if (!this.settings.intervalToggleSetting) {
 			this.stopAutoBackupInterval();
 		}
+	}
+
+	/**
+	 * restore default settings
+	 */
+	async restoreDefault() {
+		this.settings.startupSetting = DEFAULT_SETTINGS.startupSetting;
+		this.settings.lifecycleSetting = DEFAULT_SETTINGS.lifecycleSetting;
+		this.settings.savePathSetting = DEFAULT_SETTINGS.savePathSetting;
+		this.settings.customizeNameSetting = DEFAULT_SETTINGS.customizeNameSetting;
+		this.settings.intervalToggleSetting = DEFAULT_SETTINGS.intervalToggleSetting;
+		this.settings.intervalValueSetting = DEFAULT_SETTINGS.intervalValueSetting
+		await this.saveSettings();
 	}
 }
 
@@ -197,7 +210,7 @@ function autoDeleteBackups(savePathSetting: string, lifecycleSetting: string) {
 					console.log(dateStr);
 
 					const parsedDate = new Date(dateStr);
-	
+
 					if (parsedDate < currentDate) {
 						fs.remove(filePath);
 					}
