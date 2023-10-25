@@ -33,8 +33,11 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 
 					// add limits
 					const numericValue = parseFloat(value);
-					if (isNaN(numericValue) || numericValue < 0) {
+					if (numericValue < 0) {
 						new Notice('Backup lifecycle must be a non-negative number.');
+						return;
+					}
+					if (isNaN(numericValue)) {
 						return;
 					}
 
@@ -81,8 +84,11 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 
 					// add limits
 					const numericValue = parseFloat(value);
-					if (isNaN(numericValue) || numericValue <= 0) {
+					if (numericValue <= 0) {
 						new Notice('Backup intervals must be a positive number.');
+						return;
+					}
+					if (isNaN(numericValue)) {
 						return;
 					}
 
@@ -91,6 +97,14 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
+			.addButton(btn => btn
+				.setTooltip('Restore defaults')
+				.setButtonText('Restore defaults')
+				.onClick(async () => {
+					await this.plugin.restoreDefault();
+					new Notice(`Settings restored to default.`);
+				})
+			)
 			.addButton(btn => btn
 				.setTooltip('Apply settings now')
 				.setButtonText('Apply settings')
