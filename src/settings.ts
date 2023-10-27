@@ -49,7 +49,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Windows output path")
+			.setName("Windows output path (optional)")
 			.setDesc("Setup a Windows backup storage path.")
 			.addText((text) =>
 				text
@@ -61,7 +61,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Linux/MacOS output path")
+			.setName("Linux/MacOS output path (optional)")
 			.setDesc("Setup a Unix backup storage path.")
 			.addText((text) =>
 				text
