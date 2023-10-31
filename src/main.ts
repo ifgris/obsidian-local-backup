@@ -2,11 +2,13 @@ import { Notice, Plugin } from "obsidian";
 import { join } from "path";
 import * as path from "path";
 import * as fs from "fs-extra";
+import AdmZip from 'adm-zip';
 import { LocalBackupSettingTab } from "./settings";
 import {
 	getDatePlaceholdersForISO,
 	replaceDatePlaceholdersWithValues,
 } from "./utils";
+import { exec } from "child_process";
 
 interface LocalBackupPluginSettings {
 	startupSetting: boolean;
@@ -16,6 +18,8 @@ interface LocalBackupPluginSettings {
 	customizeNameSetting: string;
 	intervalToggleSetting: boolean;
 	intervalValueSetting: string;
+	sevenZipBackupToggleSetting: boolean;
+	sevenZipPathSetting: string;
 }
 
 const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
@@ -26,6 +30,8 @@ const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	customizeNameSetting: getDefaultName(),
 	intervalToggleSetting: false,
 	intervalValueSetting: "10",
+	sevenZipBackupToggleSetting: false,
+	sevenZipPathSetting: ""
 };
 
 export default class LocalBackupPlugin extends Plugin {
@@ -89,10 +95,13 @@ export default class LocalBackupPlugin extends Plugin {
 			// const backupFolderPath = join(parentDir, backupFolderName);
 			const backupZipPath = join(savePathSetting, backupZipName);
 
-			const AdmZip = require('adm-zip');
-			const zip = new AdmZip();
-			zip.addLocalFolder(vaultPath);
-			zip.writeZip(backupZipPath);
+			if (this.settings.sevenZipBackupToggleSetting) {
+				await createZipBySevenZip(this.settings.sevenZipPathSetting, vaultPath, backupZipPath);
+			}
+			else {
+				createZipByAdmZip(vaultPath, backupZipPath);
+			}
+
 			new Notice(`Vault backup created: ${backupZipPath}`);
 		} catch (error) {
 			new Notice(`Failed to create vault backup: ${error}`);
@@ -267,4 +276,39 @@ function generateRegexFromCustomPattern(customPattern: string): RegExp {
 
 	// Create a regular expression to match the custom pattern
 	return new RegExp(regexPattern);
+}
+
+/**
+ * Create zip file by adm-zip
+ * @param vaultPath 
+ * @param backupZipPath 
+ */
+function createZipByAdmZip(vaultPath: string, backupZipPath: string) {
+	// const AdmZip = require("adm-zip");
+	const zip = new AdmZip();
+	zip.addLocalFolder(vaultPath);
+	zip.writeZip(backupZipPath);
+}
+
+/**
+ * Create zip file by 7-Zip
+ * @param sevenZipPath 
+ * @param vaultPath 
+ * @param backupZipPath 
+ * @returns 
+ */
+async function createZipBySevenZip(sevenZipPath: string, vaultPath: string, backupZipPath: string) {
+	return new Promise<void>((resolve, reject) => {
+		const command = `"${sevenZipPath}" a "${backupZipPath}" "${vaultPath}"`;
+
+		exec(command, (error, stdout, stderr) => {
+			if (error) {
+				console.error("Failed to create zip file by 7-Zip:", error);
+				reject(error);
+			} else {
+				console.log("Zip file created by 7-Zip successfully.");
+				resolve();
+			}
+		});
+	});
 }
