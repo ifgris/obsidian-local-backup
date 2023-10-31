@@ -27,7 +27,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Backup history length")
+			.setName("Backup history length (days)")
 			.setDesc(
 				"Specify the number of days backups should be retained. (0 -- Infinity)"
 			)
@@ -44,6 +44,28 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 							return;
 						}
 						this.plugin.settings.lifecycleSetting = value;
+						await this.plugin.saveSettings();
+					})
+			);
+		
+		new Setting(containerEl)
+			.setName("Backups per day")
+			.setDesc(
+				"Specify the number of backups per day to keep. (0 -- Infinity)"
+			)
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.backupsPerDaySetting)
+					.onChange(async (value) => {
+						// add limits
+						const numericValue = parseFloat(value);
+						if (isNaN(numericValue) || numericValue < 0) {
+							new Notice(
+								"Backups per day must be a non-negative number."
+							);
+							return;
+						}
+						this.plugin.settings.backupsPerDaySetting = value;
 						await this.plugin.saveSettings();
 					})
 			);
