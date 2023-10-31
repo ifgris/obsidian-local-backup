@@ -50,7 +50,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Windows output path (optional)")
-			.setDesc("Setup a Windows backup storage path.")
+			.setDesc("Setup a Windows backup storage path. eg. D:\\documents\\Obsidian")
 			.addText((text) =>
 				text
 					.setValue(this.plugin.settings.winSavePathSetting)
@@ -62,7 +62,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Linux/MacOS output path (optional)")
-			.setDesc("Setup a Unix backup storage path.")
+			.setDesc("Setup a Unix backup storage path. eg. /home/user/Documents/Obsidian")
 			.addText((text) =>
 				text
 					.setValue(this.plugin.settings.unixSavePathSetting)
@@ -144,6 +144,30 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						}
 
 						this.plugin.settings.intervalValueSetting = value;
+						await this.plugin.saveSettings();
+					})
+			);
+		
+		new Setting(containerEl)
+			.setName("Backup by 7-Zip (experimental)")
+			.setDesc("7-Zip for Windows, 7-Zip/p7zip for Unix is required.")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.sevenZipBackupToggleSetting)
+					.onChange(async (value) => {
+						this.plugin.settings.sevenZipBackupToggleSetting = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("7-Zip path")
+			.setDesc("Full path of 7z. eg. D:\\software\\7-Zip\\7z.exe for Windows, /usr/bin/7z for Unix.")
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.sevenZipPathSetting)
+					.onChange(async (value) => {
+						this.plugin.settings.sevenZipPathSetting = value;
 						await this.plugin.saveSettings();
 					})
 			);
