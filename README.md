@@ -11,7 +11,7 @@ Automatically creates a local backup of the vault.
 - Backup on startup
 - Setup backups' lifecycle
 - Customize output path
-- Inteval backups
+- Interval backups
 
 ## How to use
 
@@ -24,12 +24,13 @@ Automatically creates a local backup of the vault.
 1. Setup the output path depends on your computer platform.
 2. Setup the Windows and Unix output path while you using these two platforms.
 3. If you want to keep one backup per day, here is an example of file name format: `TestVault-Backup-%Y_%m_%d`
+4. (Experimental) If you have a large size vault and Obsidian stucks on backing up, please try the experimental feature in setting page.
 
 > *To apply settings immediately, click the `Apply settings` button.*
 
 > *If you turn on interval backups, it is recommended to set a reasonable bakcup frequency, e.g. >=10min, this plugin costs CPU resources and Disk I/O resources, backup frequently will cause lagging.*
 
-> *For user who owns a vault with large size, it is recommended to close the interval backups and only do a backup on startup.*
+> *For user who owns a vault with large size, it is recommended to turn on `Backup by 7-Zip` in setting page, the experimental feature of the latest version.*
 
 ### Run a local backup command
 
@@ -71,12 +72,12 @@ Enter the command panel using `Ctrl + p`.
 - [x] Customize the backup storage path.
 - [x] Add a command to create a backup.
 - [x] Add interval backup.
-- [ ] Backup notes without `/.obsidian`.
-- [ ] More customization in Settings page.
+- [x] Backup by calling `7-Zip`.
 
 ## Reference
 
 - [adm-zip](https://github.com/cthackers/adm-zip)
+- [7-Zip](https://www.7-zip.org/)
 
 ## License
 
