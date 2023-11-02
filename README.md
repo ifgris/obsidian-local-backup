@@ -3,6 +3,7 @@
 ![GitHub](https://img.shields.io/github/license/cgcel/obsidian-local-backup)
 ![Github all releases](https://img.shields.io/github/downloads/cgcel/obsidian-local-backup/total.svg)
 ![GitLab latest release](https://badgen.net/github/release/cgcel/obsidian-local-backup)
+[![CodeQL](https://github.com/cgcel/obsidian-local-backup/actions/workflows/codeql.yml/badge.svg?branch=master)](https://github.com/cgcel/obsidian-local-backup/actions/workflows/codeql.yml)
 
 Automatically creates a local backup of the vault.
 
