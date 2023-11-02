@@ -9,8 +9,8 @@
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"start": "ts-node src/main.ts"
 	},
-	"keywords": [],
-	"author": "",
+	"keywords": ["backup"],
+	"author": "GC Chen",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/adm-zip": "^0.5.0",
