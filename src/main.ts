@@ -11,29 +11,31 @@ import {
 import { exec } from "child_process";
 
 interface LocalBackupPluginSettings {
-	startupSetting: boolean;
-	lifecycleSetting: string;
-	backupsPerDaySetting: string;
-	winSavePathSetting: string;
-	unixSavePathSetting: string;
-	customizeNameSetting: string;
-	intervalToggleSetting: boolean;
-	intervalValueSetting: string;
-	sevenZipBackupToggleSetting: boolean;
-	sevenZipPathSetting: string;
+	startupBackupStatus: boolean;
+	lifecycleValue: string;
+	backupsPerDayValue: string;
+	winSavePathValue: string;
+	unixSavePathValue: string;
+	fileNameFormatValue: string;
+	intervalBackupStatus: boolean;
+	backupFrequencyValue: string;
+	callingArchiverStatus: boolean;
+	archiverTypeValue: string;
+	archiverPathValue: string;
 }
 
 const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
-	startupSetting: false,
-	lifecycleSetting: "3",
-	backupsPerDaySetting: "3",
-	winSavePathSetting: getDefaultPath(),
-	unixSavePathSetting: getDefaultPath(),
-	customizeNameSetting: getDefaultName(),
-	intervalToggleSetting: false,
-	intervalValueSetting: "10",
-	sevenZipBackupToggleSetting: false,
-	sevenZipPathSetting: ""
+	startupBackupStatus: false,
+	lifecycleValue: "3",
+	backupsPerDayValue: "3",
+	winSavePathValue: getDefaultPath(),
+	unixSavePathValue: getDefaultPath(),
+	fileNameFormatValue: getDefaultName(),
+	intervalBackupStatus: false,
+	backupFrequencyValue: "10",
+	callingArchiverStatus: false,
+	archiverTypeValue: "",
+	archiverPathValue: ""
 };
 
 export default class LocalBackupPlugin extends Plugin {
@@ -59,7 +61,7 @@ export default class LocalBackupPlugin extends Plugin {
 		this.addSettingTab(new LocalBackupSettingTab(this.app, this));
 
 		// run startup codes.
-		if (this.settings.startupSetting) {
+		if (this.settings.startupBackupStatus) {
 			// await this.backupVaultAsync();
 			await this.archiveVaultAsync();
 		}
@@ -74,7 +76,7 @@ export default class LocalBackupPlugin extends Plugin {
 		try {
 			await this.loadSettings();
 
-			const fileName = this.settings.customizeNameSetting;
+			const fileName = this.settings.fileNameFormatValue;
 			// const backupFolderName = `${vaultName}-Backup-${currentDate}`;
 			const fileNameWithDateValues =
 				replaceDatePlaceholdersWithValues(fileName);
@@ -84,16 +86,16 @@ export default class LocalBackupPlugin extends Plugin {
 			const platform = os.platform();
 			let savePathSetting = "";
 			if (platform == "win32") {
-				savePathSetting = this.settings.winSavePathSetting;
+				savePathSetting = this.settings.winSavePathValue;
 			} else if (platform == "linux" || platform == "darwin") {
-				savePathSetting = this.settings.unixSavePathSetting;
+				savePathSetting = this.settings.unixSavePathValue;
 			}
 			// const backupFolderPath = join(parentDir, backupFolderName);
 			const backupZipPath = join(savePathSetting, backupZipName);
 
 			// call the backup functions
-			if (this.settings.sevenZipBackupToggleSetting) {
-				await createZipBySevenZip(this.settings.sevenZipPathSetting, vaultPath, backupZipPath);
+			if (this.settings.callingArchiverStatus) {
+				await createZipByArchiver(this.settings.archiverTypeValue, this.settings.archiverPathValue, vaultPath, backupZipPath);
 			}
 			else {
 				createZipByAdmZip(vaultPath, backupZipPath);
@@ -101,13 +103,19 @@ export default class LocalBackupPlugin extends Plugin {
 
 			new Notice(`Vault backup created: ${backupZipPath}`);
 
-			// call the auto delete function to delete backups
-			autoDeleteBackups(
-				this.settings.winSavePathSetting,
-				this.settings.unixSavePathSetting,
-				this.settings.customizeNameSetting,
-				this.settings.lifecycleSetting,
-				this.settings.backupsPerDaySetting)
+			// run deleteBackupsByLifeCycle
+			deleteBackupsByLifeCycle(
+				this.settings.winSavePathValue,
+				this.settings.unixSavePathValue,
+				this.settings.fileNameFormatValue,
+				this.settings.lifecycleValue);
+
+			// run deletePerDayBackups
+			deletePerDayBackups(
+				this.settings.winSavePathValue,
+				this.settings.unixSavePathValue,
+				this.settings.fileNameFormatValue,
+				this.settings.backupsPerDayValue);
 
 		} catch (error) {
 			new Notice(`Failed to create vault backup: ${error}`);
@@ -169,14 +177,14 @@ export default class LocalBackupPlugin extends Plugin {
 
 		// Start the interval if intervalToggleSetting is true and intervalValueSetting is a valid number
 		if (
-			this.settings.intervalToggleSetting &&
-			!isNaN(parseInt(this.settings.intervalValueSetting))
+			this.settings.intervalBackupStatus &&
+			!isNaN(parseInt(this.settings.backupFrequencyValue))
 		) {
 			const intervalMinutes = parseInt(
-				this.settings.intervalValueSetting
+				this.settings.backupFrequencyValue
 			);
 			await this.startAutoBackupInterval(intervalMinutes);
-		} else if (!this.settings.intervalToggleSetting) {
+		} else if (!this.settings.intervalBackupStatus) {
 			this.stopAutoBackupInterval();
 		}
 	}
@@ -185,16 +193,17 @@ export default class LocalBackupPlugin extends Plugin {
 	 * Restore default settings
 	 */
 	async restoreDefault() {
-		this.settings.startupSetting = DEFAULT_SETTINGS.startupSetting;
-		this.settings.lifecycleSetting = DEFAULT_SETTINGS.lifecycleSetting;
-		this.settings.backupsPerDaySetting = DEFAULT_SETTINGS.backupsPerDaySetting;
-		this.settings.winSavePathSetting = DEFAULT_SETTINGS.winSavePathSetting;
-		this.settings.unixSavePathSetting = DEFAULT_SETTINGS.unixSavePathSetting;
-		this.settings.customizeNameSetting = DEFAULT_SETTINGS.customizeNameSetting;
-		this.settings.intervalToggleSetting = DEFAULT_SETTINGS.intervalToggleSetting;
-		this.settings.intervalValueSetting = DEFAULT_SETTINGS.intervalValueSetting;
-		this.settings.sevenZipBackupToggleSetting = DEFAULT_SETTINGS.sevenZipBackupToggleSetting;
-		this.settings.sevenZipPathSetting = DEFAULT_SETTINGS.sevenZipPathSetting;
+		this.settings.startupBackupStatus = DEFAULT_SETTINGS.startupBackupStatus;
+		this.settings.lifecycleValue = DEFAULT_SETTINGS.lifecycleValue;
+		this.settings.backupsPerDayValue = DEFAULT_SETTINGS.backupsPerDayValue;
+		this.settings.winSavePathValue = DEFAULT_SETTINGS.winSavePathValue;
+		this.settings.unixSavePathValue = DEFAULT_SETTINGS.unixSavePathValue;
+		this.settings.fileNameFormatValue = DEFAULT_SETTINGS.fileNameFormatValue;
+		this.settings.intervalBackupStatus = DEFAULT_SETTINGS.intervalBackupStatus;
+		this.settings.backupFrequencyValue = DEFAULT_SETTINGS.backupFrequencyValue;
+		this.settings.callingArchiverStatus = DEFAULT_SETTINGS.callingArchiverStatus;
+		this.settings.archiverTypeValue = DEFAULT_SETTINGS.archiverTypeValue;
+		this.settings.archiverPathValue = DEFAULT_SETTINGS.archiverPathValue;
 		await this.saveSettings();
 	}
 }
@@ -220,33 +229,36 @@ function getDefaultName(): string {
 }
 
 /**
- * Auto delete backups
- * @param winSavePathSetting 
- * @param unixSavePathSetting 
- * @param customizeNameSetting 
- * @param lifecycleSetting 
- * @param backupsPerDaySetting 
+ * Delete backups by lifecycleSetting
+ * @param winSavePath
+ * @param unixSavePath
+ * @param fileNameFormat 
+ * @param lifecycle 
  * @returns 
  */
-function autoDeleteBackups(
-	winSavePathSetting: string, 
-	unixSavePathSetting: string, 
-	customizeNameSetting: string, 
-	lifecycleSetting: string, 
-	backupsPerDaySetting: string) {
-	console.log("Run auto delete method");
+function deleteBackupsByLifeCycle(
+	winSavePath: string,
+	unixSavePath: string,
+	fileNameFormat: string,
+	lifecycle: string,
+) {
+	console.log("Run deleteBackupsByLifeCycle");
 
-	const currentDate = new Date();
-	currentDate.setDate(currentDate.getDate() - parseInt(lifecycleSetting));
-
-	// select save path depending on platform
 	const os = require("os");
 	const platform = os.platform();
 	let savePathSetting = "";
-	if (platform == "win32") {
-		savePathSetting = winSavePathSetting;
-	} else if (platform == "linux" || platform == "darwin") {
-		savePathSetting = unixSavePathSetting;
+
+	if (platform === "win32") {
+		savePathSetting = winSavePath;
+	} else if (platform === "linux" || platform === "darwin") {
+		savePathSetting = unixSavePath;
+	}
+
+	const currentDate = new Date();
+
+	// calculate the target date
+	if (parseInt(lifecycle) !== 0) {
+		currentDate.setDate(currentDate.getDate() - parseInt(lifecycle));
 	}
 
 	fs.readdir(savePathSetting, (err, files) => {
@@ -255,61 +267,93 @@ function autoDeleteBackups(
 			return;
 		}
 
-		// delete backups to match lifecycleSetting
-		if (parseInt(lifecycleSetting) != 0) {
+		// lifecycleSetting
+		if (parseInt(lifecycle) !== 0) {
 			files.forEach((file) => {
-				// console.log(file);
 				const filePath = path.join(savePathSetting, file);
 				const stats = fs.statSync(filePath);
-				const fileNameRegex = generateRegexFromCustomPattern(customizeNameSetting)
+				const fileNameRegex = generateRegexFromCustomPattern(fileNameFormat);
 				const matchFileName = file.match(fileNameRegex);
-				// console.log(matchFileName)
-				if (stats.isFile() && matchFileName != null) {
-	
-					const stats = fs.statSync(filePath);
-					const parseTime = stats.birthtime;
+
+				if (stats.isFile() && matchFileName !== null) {
+					const parseTime = stats.mtime;
 					const createDate = new Date(parseTime.getFullYear(), parseTime.getMonth(), parseTime.getDate());
+
 					if (createDate < currentDate) {
 						fs.remove(filePath);
+						console.log(`Backup removed by deleteBackupsByLifeCycle: ${filePath}`);
 					}
 				}
 			});
 		}
+	});
+}
 
-		// delete daily backups to match backupsPerDaySetting
-		if (parseInt(backupsPerDaySetting) != 0) {
-			console.log(backupsPerDaySetting);
-			const backupFiles = files.filter((file) => {
+/**
+ * Delete backups by backupsPerDayValue
+ * @param winSavePath
+ * @param unixSavePath 
+ * @param fileNameFormat 
+ * @param backupsPerDay 
+ */
+function deletePerDayBackups(
+	winSavePath: string,
+	unixSavePath: string,
+	fileNameFormat: string,
+	backupsPerDay: string
+) {
+	console.log("Run deletePerDayBackups");
+
+	const os = require("os");
+	const platform = os.platform();
+	let savePathSetting = "";
+
+	if (platform === "win32") {
+		savePathSetting = winSavePath;
+	} else if (platform === "linux" || platform === "darwin") {
+		savePathSetting = unixSavePath;
+	}
+
+	fs.readdir(savePathSetting, (err, files) => {
+		if (err) {
+			console.error(err);
+			return;
+		}
+
+		const currentDate = new Date();
+		currentDate.setHours(0, 0, 0, 0);
+		const fileNameRegex = generateRegexFromCustomPattern(fileNameFormat);
+
+		const backupFiles = files.filter((file) => {
+			const filePath = path.join(savePathSetting, file);
+			const stats = fs.statSync(filePath);
+			const matchFileName = file.match(fileNameRegex);
+
+			return stats.isFile() && matchFileName !== null;
+		});
+
+		const todayBackupFiles = backupFiles.filter((file) => {
+			const filePath = path.join(savePathSetting, file);
+			const stats = fs.statSync(filePath);
+			const parseTime = stats.mtime;
+			const createDate = new Date(parseTime.getFullYear(), parseTime.getMonth(), parseTime.getDate());
+
+			return createDate.getTime() === currentDate.getTime();
+		});
+
+		if (todayBackupFiles.length > parseInt(backupsPerDay)) {
+			const filesToDelete = todayBackupFiles.slice(0, todayBackupFiles.length - parseInt(backupsPerDay));
+
+			filesToDelete.forEach((file) => {
 				const filePath = path.join(savePathSetting, file);
-				const stats = fs.statSync(filePath);
-				const fileNameRegex = generateRegexFromCustomPattern(customizeNameSetting);
-				const matchFileName = file.match(fileNameRegex);
-				return stats.isFile() && matchFileName !== null;
+				fs.remove(filePath, (err) => {
+					if (err) {
+						console.error(`Failed to remove backup file: ${filePath}`, err);
+					} else {
+						console.log(`Backup removed by deletePerDayBackups: ${filePath}`);
+					}
+				});
 			});
-	
-			// Sort backup files by creation date (oldest to newest)
-			backupFiles.sort((a, b) => {
-				const filePathA = path.join(savePathSetting, a);
-				const filePathB = path.join(savePathSetting, b);
-				const statsA = fs.statSync(filePathA);
-				const statsB = fs.statSync(filePathB);
-				return statsA.birthtime.getTime() - statsB.birthtime.getTime();
-			});
-	
-			// Delete excess backup files
-			const excessBackupsCount = backupFiles.length - parseInt(backupsPerDaySetting);
-			if (excessBackupsCount > 0) {
-				for (let i = 0; i < excessBackupsCount; i++) {
-					const filePath = path.join(savePathSetting, backupFiles[i]);
-					fs.remove(filePath, (err) => {
-						if (err) {
-							console.error(`Failed to remove backup file: ${filePath}`, err);
-						} else {
-							console.log(`Backup file removed: ${filePath}`);
-						}
-					});
-				}
-			}
 		}
 	});
 }
@@ -346,24 +390,34 @@ function createZipByAdmZip(vaultPath: string, backupZipPath: string) {
 }
 
 /**
- * Create zip file by 7-Zip
- * @param sevenZipPath 
+ * Create zip file by external archiver
+ * @param archiverType 
+ * @param archiverPath 
  * @param vaultPath 
  * @param backupZipPath 
  * @returns 
  */
-async function createZipBySevenZip(sevenZipPath: string, vaultPath: string, backupZipPath: string) {
-	return new Promise<void>((resolve, reject) => {
-		const command = `"${sevenZipPath}" a "${backupZipPath}" "${vaultPath}"`;
+async function createZipByArchiver(archiverType: string, archiverPath: string, vaultPath: string, backupZipPath: string) {
 
-		exec(command, (error, stdout, stderr) => {
-			if (error) {
-				console.error("Failed to create zip file by 7-Zip:", error);
-				reject(error);
-			} else {
-				console.log("Zip file created by 7-Zip successfully.");
-				resolve();
-			}
-		});
-	});
+	switch (archiverType) {
+		case "sevenZip":
+			const promise = new Promise<void>((resolve, reject) => {
+				const command = `"${archiverPath}" a "${backupZipPath}" "${vaultPath}"`;
+		
+				exec(command, (error, stdout, stderr) => {
+					if (error) {
+						console.error("Failed to create zip file by 7-Zip:", error);
+						reject(error);
+					} else {
+						console.log("Zip file created by 7-Zip successfully.");
+						resolve();
+					}
+				});
+			});
+			return promise;
+
+		default:
+			break;
+	}
+	
 }
