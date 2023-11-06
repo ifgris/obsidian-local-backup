@@ -187,9 +187,9 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			.setDesc("7-Zip for Windows, 7-Zip/p7zip for Unix is required.")
 			.addDropdown((dropDown) =>{
 				dropDown
-				.setValue(this.plugin.settings.archiverTypeValue)
 				.addOption("sevenZip", "7-Zip")
 				// .addOption("winrar", "WinRAR");
+				.setValue(this.plugin.settings.archiverTypeValue)
 				.onChange(async (value) =>	{
 					this.plugin.settings.archiverTypeValue = value;
 					await this.plugin.saveSettings();
