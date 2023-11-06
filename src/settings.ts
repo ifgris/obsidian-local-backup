@@ -19,9 +19,9 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			.setDesc("Run local backup once on Obsidian starts.")
 			.addToggle((toggle) =>
 				toggle
-					.setValue(this.plugin.settings.startupSetting)
+					.setValue(this.plugin.settings.startupBackupStatus)
 					.onChange(async (value) => {
-						this.plugin.settings.startupSetting = value;
+						this.plugin.settings.startupBackupStatus = value;
 						await this.plugin.saveSettings();
 					})
 			);
@@ -33,7 +33,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			)
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.lifecycleSetting)
+					.setValue(this.plugin.settings.lifecycleValue)
 					.onChange(async (value) => {
 						// add limits
 						const numericValue = parseFloat(value);
@@ -43,7 +43,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 							);
 							return;
 						}
-						this.plugin.settings.lifecycleSetting = value;
+						this.plugin.settings.lifecycleValue = value;
 						await this.plugin.saveSettings();
 					})
 			);
@@ -55,7 +55,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			)
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.backupsPerDaySetting)
+					.setValue(this.plugin.settings.backupsPerDayValue)
 					.onChange(async (value) => {
 						// add limits
 						const numericValue = parseFloat(value);
@@ -65,7 +65,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 							);
 							return;
 						}
-						this.plugin.settings.backupsPerDaySetting = value;
+						this.plugin.settings.backupsPerDayValue = value;
 						await this.plugin.saveSettings();
 					})
 			);
@@ -75,9 +75,9 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			.setDesc("Setup a Windows backup storage path. eg. D:\\documents\\Obsidian")
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.winSavePathSetting)
+					.setValue(this.plugin.settings.winSavePathValue)
 					.onChange(async (value) => {
-						this.plugin.settings.winSavePathSetting = value;
+						this.plugin.settings.winSavePathValue = value;
 						await this.plugin.saveSettings();
 					})
 			);
@@ -87,9 +87,9 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			.setDesc("Setup a Unix backup storage path. eg. /home/user/Documents/Obsidian")
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.unixSavePathSetting)
+					.setValue(this.plugin.settings.unixSavePathValue)
 					.onChange(async (value) => {
-						this.plugin.settings.unixSavePathSetting = value;
+						this.plugin.settings.unixSavePathValue = value;
 						await this.plugin.saveSettings();
 					})
 			);
@@ -130,9 +130,9 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			.setDesc(fileNameFragment)
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.customizeNameSetting)
+					.setValue(this.plugin.settings.fileNameFormatValue)
 					.onChange(async (value) => {
-						this.plugin.settings.customizeNameSetting = value;
+						this.plugin.settings.fileNameFormatValue = value;
 						await this.plugin.saveSettings();
 					})
 			);
@@ -142,9 +142,9 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			.setDesc("Enable to create backups at regular intervals")
 			.addToggle((toggle) =>
 				toggle
-					.setValue(this.plugin.settings.intervalToggleSetting)
+					.setValue(this.plugin.settings.intervalBackupStatus)
 					.onChange(async (value) => {
-						this.plugin.settings.intervalToggleSetting = value;
+						this.plugin.settings.intervalBackupStatus = value;
 						await this.plugin.saveSettings();
 					})
 			);
@@ -154,7 +154,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			.setDesc("Set the frequency of backups in minutes.")
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.intervalValueSetting)
+					.setValue(this.plugin.settings.backupFrequencyValue)
 					.onChange(async (value) => {
 						// add limits
 						const numericValue = parseFloat(value);
@@ -165,31 +165,45 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 							return;
 						}
 
-						this.plugin.settings.intervalValueSetting = value;
+						this.plugin.settings.backupFrequencyValue = value;
 						await this.plugin.saveSettings();
 					})
 			);
 		
 		new Setting(containerEl)
-			.setName("Backup by 7-Zip (experimental)")
-			.setDesc("7-Zip for Windows, 7-Zip/p7zip for Unix is required.")
+			.setName("Backup by Calling external file archiver (experimental)")
+			.setDesc("If toggled, backups will be created by calling external file archiver.")
 			.addToggle((toggle) =>
 				toggle
-					.setValue(this.plugin.settings.sevenZipBackupToggleSetting)
+					.setValue(this.plugin.settings.callingArchiverStatus)
 					.onChange(async (value) => {
-						this.plugin.settings.sevenZipBackupToggleSetting = value;
+						this.plugin.settings.callingArchiverStatus = value;
 						await this.plugin.saveSettings();
 					})
 			);
 
+			new Setting(containerEl)
+			.setName("Select file archiver (experimental)")
+			.setDesc("7-Zip for Windows, 7-Zip/p7zip for Unix is required.")
+			.addDropdown((dropDown) =>{
+				dropDown
+				.setValue(this.plugin.settings.archiverTypeValue)
+				.addOption("sevenZip", "7-Zip")
+				// .addOption("winrar", "WinRAR");
+				.onChange(async (value) =>	{
+					this.plugin.settings.archiverTypeValue = value;
+					await this.plugin.saveSettings();
+				});
+			});
+
 		new Setting(containerEl)
-			.setName("7-Zip path")
+			.setName("File archiver path (experimental)")
 			.setDesc("Full path of 7z. eg. D:\\software\\7-Zip\\7z.exe for Windows, /usr/bin/7z for Unix.")
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.sevenZipPathSetting)
+					.setValue(this.plugin.settings.archiverPathValue)
 					.onChange(async (value) => {
-						this.plugin.settings.sevenZipPathSetting = value;
+						this.plugin.settings.archiverPathValue = value;
 						await this.plugin.saveSettings();
 					})
 			);
