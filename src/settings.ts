@@ -218,11 +218,12 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				})
 			)
 			.addButton(btn => btn
-				.setTooltip("Apply settings now")
-				.setButtonText("Apply settings")
+				.setTooltip("Apply and save settings now")
+				.setButtonText("Apply && Save")
 				.onClick(async () => {
 					new Notice("Applying Local Backup settings.");
 					await this.plugin.applySettings();
+					await this.plugin.saveSettings();
 				})
 			);
 	}
