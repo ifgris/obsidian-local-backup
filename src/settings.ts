@@ -182,23 +182,38 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 					})
 			);
 
-			new Setting(containerEl)
+		new Setting(containerEl)
 			.setName("Select file archiver (experimental)")
-			.setDesc("7-Zip for Windows, 7-Zip/p7zip for Unix is required.")
+			.setDesc("The selected archiver must be installed.")
 			.addDropdown((dropDown) =>{
 				dropDown
 				.addOption("sevenZip", "7-Zip")
-				// .addOption("winrar", "WinRAR");
+				.addOption("winRAR", "WinRAR")
 				.setValue(this.plugin.settings.archiverTypeValue)
 				.onChange(async (value) =>	{
 					this.plugin.settings.archiverTypeValue = value;
 					await this.plugin.saveSettings();
 				});
 			});
+		
+		new Setting(containerEl)
+			.setName("Select archive file type (experimental)")
+			.setDesc("7-Zip for Windows, 7-Zip/p7zip for Unix is required.")
+			.addDropdown((dropDown) =>{
+				dropDown
+				.addOption("zip", "zip")
+				.addOption("7z", "7z")
+				.addOption("rar", "rar")
+				.setValue(this.plugin.settings.archiveFileTypeValue)
+				.onChange(async (value) =>	{
+					this.plugin.settings.archiveFileTypeValue = value;
+					await this.plugin.saveSettings();
+				});
+			});
 
 		new Setting(containerEl)
 			.setName("File archiver path (experimental)")
-			.setDesc("Full path of 7z. eg. D:\\software\\7-Zip\\7z.exe for Windows, /usr/bin/7z for Unix.")
+			.setDesc("Full path of Archiver. eg. D:\\software\\7-Zip\\7z.exe for Windows, /usr/bin/7z for Unix.")
 			.addText((text) =>
 				text
 					.setValue(this.plugin.settings.archiverPathValue)

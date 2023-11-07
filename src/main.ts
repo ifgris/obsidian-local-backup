@@ -23,6 +23,7 @@ interface LocalBackupPluginSettings {
 	backupFrequencyValue: string;
 	callingArchiverStatus: boolean;
 	archiverTypeValue: string;
+	archiveFileTypeValue: string;
 	archiverPathValue: string;
 }
 
@@ -38,6 +39,7 @@ const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	backupFrequencyValue: "10",
 	callingArchiverStatus: false,
 	archiverTypeValue: "sevenZip",
+	archiveFileTypeValue: "zip",
 	archiverPathValue: ""
 };
 
@@ -109,7 +111,8 @@ export default class LocalBackupPlugin extends Plugin {
 
 			// call the backup functions
 			if (this.settings.callingArchiverStatus) {
-				await createZipByArchiver(this.settings.archiverTypeValue, this.settings.archiverPathValue, vaultPath, backupZipPath);
+				const backupFilePath = `${fileNameWithDateValues}.${this.settings.archiveFileTypeValue}`;
+				await createZipByArchiver(this.settings.archiverTypeValue, this.settings.archiverPathValue, this.settings.archiveFileTypeValue, vaultPath, backupFilePath);
 			}
 			else {
 				createZipByAdmZip(vaultPath, backupZipPath);
@@ -220,6 +223,7 @@ export default class LocalBackupPlugin extends Plugin {
 		this.settings.backupFrequencyValue = DEFAULT_SETTINGS.backupFrequencyValue;
 		this.settings.callingArchiverStatus = DEFAULT_SETTINGS.callingArchiverStatus;
 		this.settings.archiverTypeValue = DEFAULT_SETTINGS.archiverTypeValue;
+		this.settings.archiveFileTypeValue = DEFAULT_SETTINGS.archiveFileTypeValue;
 		this.settings.archiverPathValue = DEFAULT_SETTINGS.archiverPathValue;
 		await this.saveSettings();
 	}

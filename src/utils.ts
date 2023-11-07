@@ -249,12 +249,12 @@ export function createZipByAdmZip(vaultPath: string, backupZipPath: string) {
  * @param backupZipPath 
  * @returns 
  */
-export async function createZipByArchiver(archiverType: string, archiverPath: string, vaultPath: string, backupZipPath: string) {
+export async function createZipByArchiver(archiverType: string, archiverPath: string, archiveFileType: string, vaultPath: string, backupFilePath: string) {
 
 	switch (archiverType) {
 		case "sevenZip":
 			const promise = new Promise<void>((resolve, reject) => {
-				const command = `"${archiverPath}" a "${backupZipPath}" "${vaultPath}"`;
+				const command = `"${archiverPath}" a "${backupFilePath}" "${vaultPath}"`;
 		
 				exec(command, (error, stdout, stderr) => {
 					if (error) {
@@ -267,6 +267,9 @@ export async function createZipByArchiver(archiverType: string, archiverPath: st
 				});
 			});
 			return promise;
+		
+		case "winRAR":
+			break;
 
 		default:
 			break;
