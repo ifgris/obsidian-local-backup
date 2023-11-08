@@ -255,7 +255,8 @@ export async function createZipByArchiver(archiverType: string, archiverPath: st
 		case "sevenZip":
 			const promise = new Promise<void>((resolve, reject) => {
 				const command = `"${archiverPath}" a "${backupFilePath}" "${vaultPath}"`;
-		
+				console.log(`command: ${command}`);
+				
 				exec(command, (error, stdout, stderr) => {
 					if (error) {
 						console.error("Failed to create zip file by 7-Zip:", error);
