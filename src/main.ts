@@ -107,18 +107,18 @@ export default class LocalBackupPlugin extends Plugin {
 				savePathSetting = this.settings.unixSavePathValue;
 			}
 			// const backupFolderPath = join(parentDir, backupFolderName);
-			const backupZipPath = join(savePathSetting, backupZipName);
+			let backupFilePath = join(savePathSetting, backupZipName);
 
 			// call the backup functions
 			if (this.settings.callingArchiverStatus) {
-				const backupFilePath = `${fileNameWithDateValues}.${this.settings.archiveFileTypeValue}`;
+				backupFilePath = join(savePathSetting, `${fileNameWithDateValues}.${this.settings.archiveFileTypeValue}`);
 				await createZipByArchiver(this.settings.archiverTypeValue, this.settings.archiverPathValue, this.settings.archiveFileTypeValue, vaultPath, backupFilePath);
 			}
 			else {
-				createZipByAdmZip(vaultPath, backupZipPath);
+				createZipByAdmZip(vaultPath, backupFilePath);
 			}
 
-			new Notice(`Vault backup created: ${backupZipPath}`);
+			new Notice(`Vault backup created: ${backupFilePath}`);
 
 			// run deleteBackupsByLifeCycle
 			deleteBackupsByLifeCycle(
