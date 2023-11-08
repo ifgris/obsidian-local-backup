@@ -166,6 +166,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						}
 
 						this.plugin.settings.backupFrequencyValue = value;
+						await this.plugin.applySettings();
 						await this.plugin.saveSettings();
 					})
 			);
@@ -230,15 +231,6 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				.onClick(async () => {
 					await this.plugin.restoreDefault();
 					new Notice("Settings restored to default.");
-				})
-			)
-			.addButton(btn => btn
-				.setTooltip("Apply and save settings now")
-				.setButtonText("Apply && Save")
-				.onClick(async () => {
-					new Notice("Applying Local Backup settings.");
-					await this.plugin.applySettings();
-					await this.plugin.saveSettings();
 				})
 			);
 	}
