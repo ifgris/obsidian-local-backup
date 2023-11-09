@@ -14,6 +14,8 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
+		containerEl.createEl("h3", { text: "General Settings" });
+
 		new Setting(containerEl)
 			.setName("Backup once on startup")
 			.setDesc("Run local backup once on Obsidian starts.")
@@ -172,8 +174,10 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 					})
 			);
 		
+		containerEl.createEl("h3", { text: "File Archiver Settings (Optional)" });
+
 		new Setting(containerEl)
-			.setName("Backup by Calling external file archiver (experimental)")
+			.setName("Backup by Calling external file archiver")
 			.setDesc("If toggled, backups will be created by calling external file archiver.")
 			.addToggle((toggle) =>
 				toggle
@@ -185,8 +189,8 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Select file archiver (experimental)")
-			.setDesc("The selected archiver must be installed.")
+			.setName("Select file archiver")
+			.setDesc("The selected archiver must be installed. eg. 7-Zip for Windows, 7-Zip/p7zip for Unix")
 			.addDropdown((dropDown) =>{
 				dropDown
 				.addOption("sevenZip", "7-Zip")
@@ -199,8 +203,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			});
 		
 		new Setting(containerEl)
-			.setName("Select archive file type (experimental)")
-			.setDesc("7-Zip for Windows, 7-Zip/p7zip for Unix is required.")
+			.setName("Select archive file type")
 			.addDropdown((dropDown) =>{
 				dropDown
 				.addOption("zip", "zip")
@@ -214,7 +217,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName("File archiver path (experimental)")
+			.setName("File archiver path")
 			.setDesc("Full path of Archiver. eg. D:\\software\\7-Zip\\7z.exe for Windows, /usr/bin/7z for Unix.")
 			.addText((text) =>
 				text
