@@ -242,35 +242,49 @@ export function createZipByAdmZip(vaultPath: string, backupZipPath: string) {
 }
 
 /**
- * Create zip file by external archiver
+ * Create file by external archiver
  * @param archiverType 
  * @param archiverPath 
  * @param vaultPath 
  * @param backupZipPath 
  * @returns 
  */
-export async function createZipByArchiver(archiverType: string, archiverPath: string, archiveFileType: string, vaultPath: string, backupFilePath: string) {
+export async function createFileByArchiver(archiverType: string, archiverPath: string, archiveFileType: string, vaultPath: string, backupFilePath: string) {
 
 	switch (archiverType) {
 		case "sevenZip":
-			const promise = new Promise<void>((resolve, reject) => {
+			const sevenZipPromise = new Promise<void>((resolve, reject) => {
 				const command = `"${archiverPath}" a "${backupFilePath}" "${vaultPath}"`;
 				console.log(`command: ${command}`);
 				
 				exec(command, (error, stdout, stderr) => {
 					if (error) {
-						console.error("Failed to create zip file by 7-Zip:", error);
+						console.error("Failed to create file by 7-Zip:", error);
 						reject(error);
 					} else {
-						console.log("Zip file created by 7-Zip successfully.");
+						console.log("File created by 7-Zip successfully.");
 						resolve();
 					}
 				});
 			});
-			return promise;
+			return sevenZipPromise;
 		
 		case "winRAR":
-			break;
+			const winRARPromise = new Promise<void>((resolve, reject) => {
+				const command = `"${archiverPath}" a -ep1 -rh "${backupFilePath}" "${vaultPath}\*"`;
+				console.log(`command: ${command}`);
+				
+				exec(command, (error, stdout, stderr) => {
+					if (error) {
+						console.error("Failed to create file by WinRAR:", error);
+						reject(error);
+					} else {
+						console.log("File created by WinRAR successfully.");
+						resolve();
+					}
+				});
+			});
+			return winRARPromise;
 
 		default:
 			break;
