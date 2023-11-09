@@ -162,11 +162,12 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 							new Notice(
 								"Backup intervals must be a positive number."
 							);
+							return;
 						}
 						else{
 							this.plugin.settings.backupFrequencyValue = value;
-							await this.plugin.applySettings();
 							await this.plugin.saveSettings();
+							await this.plugin.applySettings();
 						}
 					})
 			);
