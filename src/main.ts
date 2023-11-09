@@ -5,7 +5,7 @@ import {
 	replaceDatePlaceholdersWithValues,
 	getDefaultPath,
 	getDefaultName,
-	createZipByArchiver,
+	createFileByArchiver,
 	createZipByAdmZip,
 	deleteBackupsByLifeCycle,
 	deletePerDayBackups
@@ -51,7 +51,7 @@ export default class LocalBackupPlugin extends Plugin {
 		await this.loadSettings();
 
 		// startup notice
-		if (this.manifest.version === "0.1.0"){
+		if (this.manifest.version === "0.1.1"){
 			try {
 				if (this.settings.versionValue === ""){
 					new Notice("Please recofig `Local Backup` after upgrading to 0.1.0!", 10000);
@@ -112,7 +112,7 @@ export default class LocalBackupPlugin extends Plugin {
 			// call the backup functions
 			if (this.settings.callingArchiverStatus) {
 				backupFilePath = join(savePathSetting, `${fileNameWithDateValues}.${this.settings.archiveFileTypeValue}`);
-				await createZipByArchiver(this.settings.archiverTypeValue, this.settings.archiverPathValue, this.settings.archiveFileTypeValue, vaultPath, backupFilePath);
+				await createFileByArchiver(this.settings.archiverTypeValue, this.settings.archiverPathValue, this.settings.archiveFileTypeValue, vaultPath, backupFilePath);
 			}
 			else {
 				createZipByAdmZip(vaultPath, backupFilePath);
