@@ -19,21 +19,30 @@ Automatically creates a local backup of the vault.
 
 ### Setup the plugin
 
-#### Hints
+#### General Settings
+
+![general-settings](screenshot/general-settings.png)
+
+##### Hints
 
 1. Setup the output path depends on your computer platform.
 2. Setup the Windows and Unix output path while you using these two platforms.
-3. (Experimental) If you have a large size vault and Obsidian stucks on backing up, please try the experimental feature in setting page.
 
-> *To apply settings immediately, click the `Apply && Save` button.*
+> *If you turn on interval backups, it is recommended to set a reasonable bakcup frequency, e.g. >=10min, this plugin costs CPU resources and Disk I/O resources, backup frequently might cause lagging.*
 
-> *If you turn on interval backups, it is recommended to set a reasonable bakcup frequency, e.g. >=10min, this plugin costs CPU resources and Disk I/O resources, backup frequently will cause lagging.*
+#### File Archiver Settings (Optional)
+
+![file-archiver-settings](screenshot/file-archiver-settings.png)
+
+##### Hints
+
+1. (Experimental) If you have a large size vault and Obsidian stucks on backing up, please try the experimental feature in setting page.
 
 > *For user who owns a vault with large size, it is recommended to turn on `Backup by calling external file archiver` in setting page, the experimental feature of the latest version, then setup the rest of settings of archiver.*
 
 ### Run a local backup command
 
-Enter the command panel using `Ctrl + p`.
+Enter the command panel using `Ctrl + P`.
 
 ![run-command](screenshot/run-command.png)
 
