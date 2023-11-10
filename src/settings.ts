@@ -152,7 +152,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Backup frequency")
+			.setName("Backup frequency (minutes)")
 			.setDesc("Set the frequency of backups in minutes.")
 			.addText((text) =>
 				text
