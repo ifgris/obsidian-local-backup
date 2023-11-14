@@ -51,15 +51,14 @@ export default class LocalBackupPlugin extends Plugin {
 		await this.loadSettings();
 
 		// startup notice
-		if (this.manifest.version === "0.1.2"){
-			try {
-				if (this.settings.versionValue === ""){
-					new Notice("Please recofig `Local Backup` after upgrading to 0.1.2!", 10000);
-				}
-			} catch (error) {
-				new Notice("Please recofig `Local Backup` after upgrading to 0.1.2!", 10000);	
+		try {
+			if (this.settings.versionValue === "") {
+				new Notice(`Please recofig \`Local Backup\` after upgrading to ${this.manifest.version}!`, 10000);
 			}
+		} catch (error) {
+			new Notice(`Please recofig \`Local Backup\` after upgrading to ${this.manifest.version}!`, 10000);
 		}
+
 
 		// this.app.workspace.on('window-close', await this.backupRepository.bind(this));
 
