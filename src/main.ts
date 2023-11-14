@@ -118,6 +118,7 @@ export default class LocalBackupPlugin extends Plugin {
 				createZipByAdmZip(vaultPath, backupFilePath);
 			}
 
+			console.log(`Vault backup created: ${backupFilePath}`);
 			new Notice(`Vault backup created: ${backupFilePath}`);
 
 			// run deleteBackupsByLifeCycle

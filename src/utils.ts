@@ -156,6 +156,10 @@ export function deletePerDayBackups(
 ) {
 	console.log("Run deletePerDayBackups");
 
+	if (parseInt(backupsPerDay) === 0) {
+		return;
+	}
+
 	const os = require("os");
 	const platform = os.platform();
 	let savePathSetting = "";
