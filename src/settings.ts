@@ -217,13 +217,25 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName("File archiver path")
-			.setDesc("Full path of Archiver. eg. D:\\software\\7-Zip\\7z.exe for Windows, /usr/bin/7z for Unix.")
+			.setName("File archiver path (Win)")
+			.setDesc("Full path of Archiver. eg. D:\\software\\7-Zip\\7z.exe for Windows.")
 			.addText((text) =>
 				text
-					.setValue(this.plugin.settings.archiverPathValue)
+					.setValue(this.plugin.settings.archiverWinPathValue)
 					.onChange(async (value) => {
-						this.plugin.settings.archiverPathValue = value;
+						this.plugin.settings.archiverWinPathValue = value;
+						await this.plugin.saveSettings();
+					})
+			);
+		
+		new Setting(containerEl)
+			.setName("File archiver path (Unix)")
+			.setDesc("Full path of Archiver. eg. /usr/bin/7z for Unix.")
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.archiverUnixPathValue)
+					.onChange(async (value) => {
+						this.plugin.settings.archiverUnixPathValue = value;
 						await this.plugin.saveSettings();
 					})
 			);

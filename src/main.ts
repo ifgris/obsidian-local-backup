@@ -1,4 +1,4 @@
-import { Notice, Plugin } from "obsidian";
+import { Notice, Plugin, MarkdownView, App } from "obsidian";
 import { join } from "path";
 import { LocalBackupSettingTab } from "./settings";
 import {
@@ -24,7 +24,8 @@ interface LocalBackupPluginSettings {
 	callingArchiverStatus: boolean;
 	archiverTypeValue: string;
 	archiveFileTypeValue: string;
-	archiverPathValue: string;
+	archiverWinPathValue: string;
+	archiverUnixPathValue: string;
 }
 
 const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
@@ -40,7 +41,8 @@ const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	callingArchiverStatus: false,
 	archiverTypeValue: "sevenZip",
 	archiveFileTypeValue: "zip",
-	archiverPathValue: ""
+	archiverWinPathValue: "",
+	archiverUnixPathValue: ""
 };
 
 export default class LocalBackupPlugin extends Plugin {
@@ -99,19 +101,22 @@ export default class LocalBackupPlugin extends Plugin {
 			const vaultPath = (this.app.vault.adapter as any).basePath;
 			const os = require("os");
 			const platform = os.platform();
-			let savePathSetting = "";
+			let savePathValue = "";
+			let archiverPathValue = "";
 			if (platform == "win32") {
-				savePathSetting = this.settings.winSavePathValue;
+				savePathValue = this.settings.winSavePathValue;
+				archiverPathValue = this.settings.archiverWinPathValue;
 			} else if (platform == "linux" || platform == "darwin") {
-				savePathSetting = this.settings.unixSavePathValue;
+				savePathValue = this.settings.unixSavePathValue;
+				archiverPathValue = this.settings.archiverUnixPathValue;
 			}
 			// const backupFolderPath = join(parentDir, backupFolderName);
-			let backupFilePath = join(savePathSetting, backupZipName);
+			let backupFilePath = join(savePathValue, backupZipName);
 
 			// call the backup functions
 			if (this.settings.callingArchiverStatus) {
-				backupFilePath = join(savePathSetting, `${fileNameWithDateValues}.${this.settings.archiveFileTypeValue}`);
-				await createFileByArchiver(this.settings.archiverTypeValue, this.settings.archiverPathValue, this.settings.archiveFileTypeValue, vaultPath, backupFilePath);
+				backupFilePath = join(savePathValue, `${fileNameWithDateValues}.${this.settings.archiveFileTypeValue}`);
+				await createFileByArchiver(this.settings.archiverTypeValue, archiverPathValue, this.settings.archiveFileTypeValue, vaultPath, backupFilePath);
 			}
 			else {
 				createZipByAdmZip(vaultPath, backupFilePath);
@@ -224,7 +229,8 @@ export default class LocalBackupPlugin extends Plugin {
 		this.settings.callingArchiverStatus = DEFAULT_SETTINGS.callingArchiverStatus;
 		this.settings.archiverTypeValue = DEFAULT_SETTINGS.archiverTypeValue;
 		this.settings.archiveFileTypeValue = DEFAULT_SETTINGS.archiveFileTypeValue;
-		this.settings.archiverPathValue = DEFAULT_SETTINGS.archiverPathValue;
+		this.settings.archiverWinPathValue = DEFAULT_SETTINGS.archiverWinPathValue;
+		this.settings.archiverUnixPathValue = DEFAULT_SETTINGS.archiverUnixPathValue;
 		await this.saveSettings();
 	}
 }
