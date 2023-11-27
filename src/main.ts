@@ -1,4 +1,4 @@
-import { Notice, Plugin, MarkdownView, App } from "obsidian";
+import { Notice, Plugin, MarkdownView, App, addIcon } from "obsidian";
 import { join } from "path";
 import { LocalBackupSettingTab } from "./settings";
 import {
@@ -10,6 +10,7 @@ import {
 	deleteBackupsByLifeCycle,
 	deletePerDayBackups
 } from "./utils";
+import { ICON_DATA } from "./constants";
 
 interface LocalBackupPluginSettings {
 	versionValue: string;
@@ -72,6 +73,12 @@ export default class LocalBackupPlugin extends Plugin {
 				// this.backupVaultAsync();
 				await this.archiveVaultAsync();
 			},
+		});
+
+		// Add ribbon icon
+		addIcon("sidebar-icon", ICON_DATA);
+		this.addRibbonIcon("sidebar-icon", "Run local backup", ()=>{
+			this.archiveVaultAsync();
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
