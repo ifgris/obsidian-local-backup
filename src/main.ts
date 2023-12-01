@@ -11,6 +11,7 @@ import {
 	deletePerDayBackups
 } from "./utils";
 import { ICON_DATA } from "./constants";
+import { NewVersionNotifyModal } from "./modals";
 
 interface LocalBackupPluginSettings {
 	versionValue: string;
@@ -53,10 +54,14 @@ export default class LocalBackupPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
+		const settingTab = new LocalBackupSettingTab(this.app, this);
+		// This adds a settings tab so the user can configure various aspects of the plugin
+		this.addSettingTab(settingTab);
+
 		// startup notice
 		try {
 			if (this.settings.versionValue === "") {
-				new Notice(`Please recofig \`Local Backup\` after upgrading to ${this.manifest.version}!`, 10000);
+				new NewVersionNotifyModal(this.app, this).open();
 			}
 		} catch (error) {
 			new Notice(`Please recofig \`Local Backup\` after upgrading to ${this.manifest.version}!`, 10000);
@@ -77,12 +82,9 @@ export default class LocalBackupPlugin extends Plugin {
 
 		// Add ribbon icon
 		addIcon("sidebar-icon", ICON_DATA);
-		this.addRibbonIcon("sidebar-icon", "Run local backup", ()=>{
+		this.addRibbonIcon("sidebar-icon", "Run local backup", () => {
 			this.archiveVaultAsync();
 		});
-
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new LocalBackupSettingTab(this.app, this));
 
 		// run startup codes.
 		if (this.settings.startupBackupStatus) {
