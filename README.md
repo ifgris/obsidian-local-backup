@@ -42,9 +42,17 @@ Automatically creates a local backup of the vault.
 
 ### Run a local backup command
 
+#### Command panel
+
 Enter the command panel using `Ctrl + P`.
 
 ![run-command](screenshot/run-command.png)
+
+#### Sidebar icon
+
+Click the sidebar icon.
+
+![sidebar-icon](screenshot/sidebar-icon.png)
 
 ## Installation
 
