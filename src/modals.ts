@@ -14,7 +14,8 @@ export class NewVersionNotifyModal extends Modal {
         contentEl.createEl("h3", { text: "Local Backup Updates (0.1.4)" });
         contentEl.createDiv({ text: "1. File Archiver Settings changed: Please reconfig `File Archiver Settings` if you are using it." });
         contentEl.createEl("br");
-        contentEl.createDiv({ text: "2. New ribbon icon." });
+        contentEl.createDiv({ text: "2. New sidebar icon." });
+        contentEl.createEl("br");
         new Setting(contentEl)
             .addButton((btn) =>
                 btn

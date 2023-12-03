@@ -60,8 +60,9 @@ export default class LocalBackupPlugin extends Plugin {
 
 		// startup notice
 		try {
-			if (this.settings.versionValue === "") {
+			if (this.settings.versionValue !== this.manifest.version) {
 				new NewVersionNotifyModal(this.app, this).open();
+				this.saveSettings();
 			}
 		} catch (error) {
 			new Notice(`Please recofig \`Local Backup\` after upgrading to ${this.manifest.version}!`, 10000);
