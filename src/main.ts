@@ -84,6 +84,7 @@ export default class LocalBackupPlugin extends Plugin {
 		// Add ribbon icon
 		addIcon("sidebar-icon", ICON_DATA);
 		this.addRibbonIcon("sidebar-icon", "Run local backup", () => {
+			new Notice("Running local backup...");
 			this.archiveVaultAsync();
 		});
 
