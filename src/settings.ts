@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting, Notice } from "obsidian";
 import LocalBackupPlugin from "./main";
+import "./styles.css";
 
 export class LocalBackupSettingTab extends PluginSettingTab {
 	plugin: LocalBackupPlugin;
@@ -15,6 +16,28 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		containerEl.createEl("h3", { text: "General Settings" });
+
+		const ribbonIconDesc = new DocumentFragment();
+		ribbonIconDesc.createSpan({
+			text: "Show a ribbon icon in the left sidebar.",
+		});
+		ribbonIconDesc.createDiv({
+			text: "Please close and reopen Obsidian for this setting to take effect.",
+			cls: "local-backup-text--accent",
+		});
+
+
+		new Setting(containerEl)
+			.setName("Show ribbon icon")
+			.setDesc(ribbonIconDesc)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.showRibbonIcon)
+					.onChange(async (value) => {
+						this.plugin.settings.showRibbonIcon = value;
+						await this.plugin.saveSettings();
+					})
+			);
 
 		new Setting(containerEl)
 			.setName("Backup once on startup")
