@@ -6,3 +6,6 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+.local-backup-text--accent {
+	color: var(--text-accent);
+}
