@@ -74,26 +74,24 @@ Click the sidebar icon.
 
 ### Build
 
+**Code contributing is welcome! Just make a PR to master branch directly:)**
+
 - Clone this repo.
 - Make sure your NodeJS is at least v16 (`node --version`).
 - `npm i` or `yarn` to install dependencies.
 - `npm run dev` to start compilation in watch mode.
 - `npm run build` to build the `main.js` in `./build`.
 
-## Todo
-
-- [x] Backup on startup.
-- [x] Archive the backup dictionary to save disk memory.
-- [x] Customize the backup lifecycle.
-- [x] Customize the backup storage path.
-- [x] Add a command to create a backup.
-- [x] Add interval backup.
-- [x] Backup by calling archiver, eg. `7-Zip`.
-
 ## Reference
 
 - [adm-zip](https://github.com/cthackers/adm-zip)
 - [7-Zip](https://www.7-zip.org/)
+
+## Sponsor this project
+
+You could consider buy me a coffee if the plugin saves your time!
+
+<div class="local-backup-bmac-container"><a href="https://www.buymeacoffee.com/cgcel" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 144px !important;" ></a></div>
 
 ## License
 
