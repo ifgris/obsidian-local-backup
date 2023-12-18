@@ -1,4 +1,4 @@
-import { Notice, Plugin, MarkdownView, App, addIcon } from "obsidian";
+import { Notice, Plugin, addIcon } from "obsidian";
 import { join } from "path";
 import { LocalBackupSettingTab } from "./settings";
 import {
