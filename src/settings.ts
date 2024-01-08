@@ -197,6 +197,52 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 					})
 			);
 		
+		new Setting(containerEl)
+			.setName("Retry times")
+			.setDesc("Set the retry times after backup failed.")
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.maxRetriesValue)
+					.onChange(async (value) => {
+						// add limits
+						const numericValue = parseFloat(value);
+						if (isNaN(numericValue) || numericValue <= 0) {
+							new Notice(
+								"Retry times must be a positive number."
+							);
+							return;
+						}
+						else{
+							this.plugin.settings.maxRetriesValue = value;
+							await this.plugin.saveSettings();
+							await this.plugin.applySettings();
+						}
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Retry interval (ms)")
+			.setDesc("Set the retry interval (millisecond).")
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.retryIntervalValue)
+					.onChange(async (value) => {
+						// add limits
+						const numericValue = parseFloat(value);
+						if (isNaN(numericValue) || numericValue <= 0) {
+							new Notice(
+								"Backup intervals must be a positive number."
+							);
+							return;
+						}
+						else{
+							this.plugin.settings.retryIntervalValue = value;
+							await this.plugin.saveSettings();
+							await this.plugin.applySettings();
+						}
+					})
+			);
+		
 		containerEl.createEl("h3", { text: "File Archiver Settings (Optional)" });
 
 		new Setting(containerEl)

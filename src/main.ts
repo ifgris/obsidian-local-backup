@@ -18,6 +18,8 @@ interface LocalBackupPluginSettings {
 	startupBackupStatus: boolean;
 	lifecycleValue: string;
 	backupsPerDayValue: string;
+	maxRetriesValue: string;
+	retryIntervalValue: string;
 	winSavePathValue: string;
 	unixSavePathValue: string;
 	fileNameFormatValue: string;
@@ -36,6 +38,8 @@ const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	startupBackupStatus: false,
 	lifecycleValue: "3",
 	backupsPerDayValue: "3",
+	maxRetriesValue: "1",
+	retryIntervalValue: "100",
 	winSavePathValue: getDefaultPath(),
 	unixSavePathValue: getDefaultPath(),
 	fileNameFormatValue: getDefaultName(),
@@ -95,10 +99,42 @@ export default class LocalBackupPlugin extends Plugin {
 		// run startup codes.
 		if (this.settings.startupBackupStatus) {
 			// await this.backupVaultAsync();
-			await this.archiveVaultAsync();
+			// await this.archiveVaultAsync();
+			await this.archiveVaultAsyncWithRetry();
 		}
 
 		await this.applySettings();
+	}
+
+	/**
+	 * Archive vault with retry method
+	 */
+	async archiveVaultAsyncWithRetry() {
+		const maxRetries = parseInt(this.settings.maxRetriesValue);
+		let retryCount = 0;
+
+		const retryInterval = parseInt(this.settings.retryIntervalValue);
+	
+		while (retryCount < maxRetries) {
+			try {
+				await this.archiveVaultAsync();
+				break;
+			} catch (error) {
+				// handle errors
+				console.error(`Error during archive attempt ${retryCount + 1}: ${error}`);
+				retryCount++;
+	
+				if (retryCount < maxRetries) {
+					// customized delay
+					await this.delay(retryInterval); // delay
+					console.log(`Retrying archive attempt ${retryCount + 1}...`);
+				} else {
+					// throw exceptions
+					console.error(`Failed to create vault backup after ${maxRetries} attempts.`);
+					new Notice(`Failed to create vault backup after ${maxRetries} attempts: ${error}`);
+				}
+			}
+		}
 	}
 
 	/**
@@ -158,6 +194,15 @@ export default class LocalBackupPlugin extends Plugin {
 			new Notice(`Failed to create vault backup: ${error}`);
 			console.log(error);
 		}
+	}
+
+	/**
+	 * delay function
+	 * @param ms 
+	 * @returns 
+	 */
+	async delay(ms: number) {
+		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
 	/**
@@ -236,6 +281,8 @@ export default class LocalBackupPlugin extends Plugin {
 		this.settings.startupBackupStatus = DEFAULT_SETTINGS.startupBackupStatus;
 		this.settings.lifecycleValue = DEFAULT_SETTINGS.lifecycleValue;
 		this.settings.backupsPerDayValue = DEFAULT_SETTINGS.backupsPerDayValue;
+		this.settings.maxRetriesValue = DEFAULT_SETTINGS.maxRetriesValue;
+		this.settings.retryIntervalValue = DEFAULT_SETTINGS.retryIntervalValue;
 		this.settings.winSavePathValue = DEFAULT_SETTINGS.winSavePathValue;
 		this.settings.unixSavePathValue = DEFAULT_SETTINGS.unixSavePathValue;
 		this.settings.fileNameFormatValue = DEFAULT_SETTINGS.fileNameFormatValue;
