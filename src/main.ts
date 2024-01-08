@@ -83,7 +83,8 @@ export default class LocalBackupPlugin extends Plugin {
 			name: "Run local backup",
 			callback: async () => {
 				// this.backupVaultAsync();
-				await this.archiveVaultAsync();
+				// await this.archiveVaultAsync();
+				await this.archiveVaultWithRetryAsync();
 			},
 		});
 
@@ -92,7 +93,8 @@ export default class LocalBackupPlugin extends Plugin {
 			addIcon("sidebar-icon", ICON_DATA);
 			this.addRibbonIcon("sidebar-icon", "Run local backup", () => {
 				new Notice("Running local backup...");
-				this.archiveVaultAsync();
+				// this.archiveVaultAsync();
+				this.archiveVaultWithRetryAsync();
 			});
 		}
 
@@ -100,7 +102,7 @@ export default class LocalBackupPlugin extends Plugin {
 		if (this.settings.startupBackupStatus) {
 			// await this.backupVaultAsync();
 			// await this.archiveVaultAsync();
-			await this.archiveVaultAsyncWithRetry();
+			await this.archiveVaultWithRetryAsync();
 		}
 
 		await this.applySettings();
@@ -109,7 +111,7 @@ export default class LocalBackupPlugin extends Plugin {
 	/**
 	 * Archive vault with retry method
 	 */
-	async archiveVaultAsyncWithRetry() {
+	async archiveVaultWithRetryAsync() {
 		const maxRetries = parseInt(this.settings.maxRetriesValue);
 		let retryCount = 0;
 
@@ -191,8 +193,9 @@ export default class LocalBackupPlugin extends Plugin {
 				this.settings.backupsPerDayValue);
 
 		} catch (error) {
-			new Notice(`Failed to create vault backup: ${error}`);
-			console.log(error);
+			// new Notice(`Failed to create vault backup: ${error}`);
+			// console.log(error);
+			throw error;
 		}
 	}
 
@@ -215,7 +218,8 @@ export default class LocalBackupPlugin extends Plugin {
 		}
 
 		this.intervalId = setInterval(async () => {
-			await this.archiveVaultAsync();
+			// await this.archiveVaultAsync();
+			await this.archiveVaultWithRetryAsync();
 		}, intervalMinutes * 60 * 1000); // Convert minutes to milliseconds
 
 		new Notice(
