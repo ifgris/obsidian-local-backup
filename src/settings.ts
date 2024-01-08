@@ -218,6 +218,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 				dropDown
 				.addOption("sevenZip", "7-Zip")
 				.addOption("winRAR", "WinRAR")
+				.addOption("bandizip", "bandizip")
 				.setValue(this.plugin.settings.archiverTypeValue)
 				.onChange(async (value) =>	{
 					this.plugin.settings.archiverTypeValue = value;
@@ -241,7 +242,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("File archiver path (Win)")
-			.setDesc("Full path of Archiver. eg. D:\\software\\7-Zip\\7z.exe for Windows.")
+			.setDesc("Full path of Archiver. eg. D:\\software\\7-Zip\\7z.exe for Windows. Using bz.exe (Bandizip) for Windows is recommended.")
 			.addText((text) =>
 				text
 					.setValue(this.plugin.settings.archiverWinPathValue)

@@ -290,6 +290,23 @@ export async function createFileByArchiver(archiverType: string, archiverPath: s
 			});
 			return winRARPromise;
 
+		case "bandizip":
+			const bandizipPromise = new Promise<void>((resolve, reject) => {
+				const command = `"${archiverPath}" c "${backupFilePath}" "${vaultPath}"`;
+				console.log(`command: ${command}`);
+				
+				exec(command, (error, stdout, stderr) => {
+					if (error) {
+						console.error("Failed to create file by Bandizip:", error);
+						reject(error);
+					} else {
+						console.log("File created by Bandizip successfully.");
+						resolve();
+					}
+				});
+			});
+			return bandizipPromise;
+
 		default:
 			break;
 	}
