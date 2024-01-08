@@ -13,7 +13,8 @@ Automatically creates a local backup of the vault.
 - Setup backups' lifecycle
 - Customize output path
 - Interval backups
-- Backup by calling archiver
+- Backup by calling archiver (7-Zip, WinRAR, Bandizip)
+- Retry after failures
 
 ## How to use
 
@@ -86,6 +87,8 @@ Click the sidebar icon.
 
 - [adm-zip](https://github.com/cthackers/adm-zip)
 - [7-Zip](https://www.7-zip.org/)
+- [WinRAR](https://www.win-rar.com/)
+- [Bandizip](https://www.bandisoft.com/)
 
 ## Sponsor this project
 
