@@ -11,18 +11,20 @@ export class NewVersionNotifyModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        const release = "0.1.5";
+        const release = "0.1.6";
 
         const header = `### New in Local Backup ${release}\n`
-        const text = `Thank you for using Local Backup!`;
+        const text = `Thank you for using Local Backup!\n`;
 
         const contentDiv = contentEl.createDiv("local-backup-update-modal");
         const releaseNotes = [
-            "1. Add ribbon icon toggle by @trey-wallis",
-            "2. Add a notice after clicking ribbon icon."]
+            "1. Update the text in modal.",
+            "2. Add customized retry after backup failed.",
+            "3. Add support for Bandizip."
+        ]
             .join("\n");
 
-        const andNow = `And now, here is everything new in Local Backup since your last update:`;
+        const andNow = `Here are the updates in the latest version:`;
         const markdownStr = `${header}\n${text}\n${andNow}\n\n---\n\n${addExtraHashToHeadings(
             releaseNotes
         )}`;
