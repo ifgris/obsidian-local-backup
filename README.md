@@ -15,6 +15,7 @@ Automatically creates a local backup of the vault.
 - Interval backups
 - Backup by calling archiver (7-Zip, WinRAR, Bandizip)
 - Retry after failures
+- Create specific file
 
 ## How to use
 
@@ -48,6 +49,10 @@ Automatically creates a local backup of the vault.
 Enter the command panel using `Ctrl + P`.
 
 ![run-command](screenshot/run-command.png)
+
+#### Create a specific backup
+
+As you can see in the command panel screenshot above, you are available to create a specific backup file if you want to keep the file. The file created by this command would not delete by the plugin. But you have to name it different from the `File name` setting. (eg. File name: `dev-Backup-%Y_%m_%d-%H_%M_%S`, and your specific file name should not be the same format as File name).
 
 #### Sidebar icon
 
