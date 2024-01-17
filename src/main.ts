@@ -1,4 +1,4 @@
-import { Notice, Plugin, addIcon } from "obsidian";
+import { Editor, MarkdownView, Notice, Plugin, addIcon } from "obsidian";
 import { join } from "path";
 import { LocalBackupSettingTab } from "./settings";
 import {
@@ -11,7 +11,7 @@ import {
 	deletePerDayBackups
 } from "./utils";
 import { ICON_DATA } from "./constants";
-import { NewVersionNotifyModal } from "./modals";
+import { NewVersionNotifyModal, PromptModal } from "./modals";
 
 interface LocalBackupPluginSettings {
 	versionValue: string;
@@ -87,6 +87,21 @@ export default class LocalBackupPlugin extends Plugin {
 				await this.archiveVaultWithRetryAsync();
 			},
 		});
+		this.addCommand({
+			id: "run-specific-backup",
+			name: "Run specific backup",
+			callback: async () => {
+				// this.backupVaultAsync();
+				// await this.archiveVaultAsync();
+				new PromptModal(
+					"Input specific file name",
+					"Specific-Backup-%Y_%m_%d-%H_%M_%S",
+					false,
+					this.app, 
+					this
+					).open();
+			},
+		});
 
 		// Add ribbon icon
 		if (this.settings.showRibbonIcon){
@@ -111,7 +126,7 @@ export default class LocalBackupPlugin extends Plugin {
 	/**
 	 * Archive vault with retry method
 	 */
-	async archiveVaultWithRetryAsync() {
+	async archiveVaultWithRetryAsync(specificFileName: string = "") {
 		const maxRetries = parseInt(this.settings.maxRetriesValue);
 		let retryCount = 0;
 
@@ -119,7 +134,7 @@ export default class LocalBackupPlugin extends Plugin {
 	
 		while (retryCount < maxRetries) {
 			try {
-				await this.archiveVaultAsync();
+				await this.archiveVaultAsync(specificFileName);
 				break;
 			} catch (error) {
 				// handle errors
@@ -142,11 +157,17 @@ export default class LocalBackupPlugin extends Plugin {
 	/**
 	 * Archive vault method
 	 */
-	async archiveVaultAsync() {
+	async archiveVaultAsync(specificFileName: string) {
 		try {
 			await this.loadSettings();
-
-			const fileName = this.settings.fileNameFormatValue;
+			
+			let fileName = "";
+			if(specificFileName==""){
+				fileName = this.settings.fileNameFormatValue;
+			}
+			else{
+				fileName = specificFileName;
+			}
 			// const backupFolderName = `${vaultName}-Backup-${currentDate}`;
 			const fileNameWithDateValues =
 				replaceDatePlaceholdersWithValues(fileName);
@@ -243,11 +264,11 @@ export default class LocalBackupPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
+	this.settings = Object.assign(
+	{},
+	DEFAULT_SETTINGS,
+	await this.loadData()
+	);
 	}
 
 	async saveSettings() {
