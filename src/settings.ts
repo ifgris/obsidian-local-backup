@@ -300,7 +300,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 		
 		new Setting(containerEl)
 			.setName("File archiver path (Unix)")
-			.setDesc("Full path of Archiver. eg. /usr/bin/7z for Unix.")
+			.setDesc("Full path of Archiver. eg. /usr/bin/7z or 7z for Unix.")
 			.addText((text) =>
 				text
 					.setValue(this.plugin.settings.archiverUnixPathValue)
