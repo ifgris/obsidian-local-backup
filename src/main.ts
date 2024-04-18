@@ -31,6 +31,7 @@ interface LocalBackupPluginSettings {
 	archiverWinPathValue: string;
 	archiverUnixPathValue: string;
 	showRibbonIcon: boolean;
+	showConsoleLog: boolean;
 }
 
 const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
@@ -51,6 +52,7 @@ const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	archiverWinPathValue: "",
 	archiverUnixPathValue: "",
 	showRibbonIcon: true,
+	showConsoleLog: false,
 };
 
 export default class LocalBackupPlugin extends Plugin {
@@ -97,14 +99,14 @@ export default class LocalBackupPlugin extends Plugin {
 					"Input specific file name",
 					"Specific-Backup-%Y_%m_%d-%H_%M_%S",
 					false,
-					this.app, 
+					this.app,
 					this
-					).open();
+				).open();
 			},
 		});
 
 		// Add ribbon icon
-		if (this.settings.showRibbonIcon){
+		if (this.settings.showRibbonIcon) {
 			addIcon("sidebar-icon", ICON_DATA);
 			this.addRibbonIcon("sidebar-icon", "Run local backup", () => {
 				new Notice("Running local backup...");
@@ -131,7 +133,7 @@ export default class LocalBackupPlugin extends Plugin {
 		let retryCount = 0;
 
 		const retryInterval = parseInt(this.settings.retryIntervalValue);
-	
+
 		while (retryCount < maxRetries) {
 			try {
 				await this.archiveVaultAsync(specificFileName);
@@ -140,11 +142,13 @@ export default class LocalBackupPlugin extends Plugin {
 				// handle errors
 				console.error(`Error during archive attempt ${retryCount + 1}: ${error}`);
 				retryCount++;
-	
+
 				if (retryCount < maxRetries) {
 					// customized delay
 					await this.delay(retryInterval); // delay
-					console.log(`Retrying archive attempt ${retryCount + 1}...`);
+					if (this.settings.showConsoleLog) {
+						console.log(`Retrying archive attempt ${retryCount + 1}...`);
+					}
 				} else {
 					// throw exceptions
 					console.error(`Failed to create vault backup after ${maxRetries} attempts.`);
@@ -160,12 +164,12 @@ export default class LocalBackupPlugin extends Plugin {
 	async archiveVaultAsync(specificFileName: string) {
 		try {
 			await this.loadSettings();
-			
+
 			let fileName = "";
-			if(specificFileName==""){
+			if (specificFileName == "") {
 				fileName = this.settings.fileNameFormatValue;
 			}
-			else{
+			else {
 				fileName = specificFileName;
 			}
 			// const backupFolderName = `${vaultName}-Backup-${currentDate}`;
@@ -196,7 +200,9 @@ export default class LocalBackupPlugin extends Plugin {
 				createZipByAdmZip(vaultPath, backupFilePath);
 			}
 
-			console.log(`Vault backup created: ${backupFilePath}`);
+			if (this.settings.showConsoleLog) {
+				console.log(`Vault backup created: ${backupFilePath}`);
+			}
 			new Notice(`Vault backup created: ${backupFilePath}`);
 
 			// run deleteBackupsByLifeCycle
@@ -260,15 +266,17 @@ export default class LocalBackupPlugin extends Plugin {
 	}
 
 	async onunload() {
-		console.log("Local Backup unloaded");
+		if (this.settings.showConsoleLog) {
+			console.log("Local Backup unloaded");
+		}
 	}
 
 	async loadSettings() {
-	this.settings = Object.assign(
-	{},
-	DEFAULT_SETTINGS,
-	await this.loadData()
-	);
+		this.settings = Object.assign(
+			{},
+			DEFAULT_SETTINGS,
+			await this.loadData()
+		);
 	}
 
 	async saveSettings() {
@@ -318,6 +326,8 @@ export default class LocalBackupPlugin extends Plugin {
 		this.settings.archiveFileTypeValue = DEFAULT_SETTINGS.archiveFileTypeValue;
 		this.settings.archiverWinPathValue = DEFAULT_SETTINGS.archiverWinPathValue;
 		this.settings.archiverUnixPathValue = DEFAULT_SETTINGS.archiverUnixPathValue;
+		this.settings.showRibbonIcon = DEFAULT_SETTINGS.showRibbonIcon;
+		this.settings.showConsoleLog = DEFAULT_SETTINGS.showConsoleLog;
 		await this.saveSettings();
 	}
 }

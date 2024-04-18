@@ -26,19 +26,6 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 			cls: "local-backup-text--accent",
 		});
 
-
-		new Setting(containerEl)
-			.setName("Show ribbon icon")
-			.setDesc(ribbonIconDesc)
-			.addToggle((toggle) =>
-				toggle
-					.setValue(this.plugin.settings.showRibbonIcon)
-					.onChange(async (value) => {
-						this.plugin.settings.showRibbonIcon = value;
-						await this.plugin.saveSettings();
-					})
-			);
-
 		new Setting(containerEl)
 			.setName("Backup once on startup")
 			.setDesc("Run local backup once on Obsidian starts.")
@@ -240,6 +227,30 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 							await this.plugin.applySettings();
 						}
+					})
+			);
+		
+		new Setting(containerEl)
+			.setName("Show ribbon icon")
+			.setDesc(ribbonIconDesc)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.showRibbonIcon)
+					.onChange(async (value) => {
+						this.plugin.settings.showRibbonIcon = value;
+						await this.plugin.saveSettings();
+					})
+			);
+		
+		new Setting(containerEl)
+			.setName("Show console logs")
+			.setDesc("Enable/Disable console log statements")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.showConsoleLog)
+					.onChange(async (value) => {
+						this.plugin.settings.showConsoleLog = value;
+						await this.plugin.saveSettings();
 					})
 			);
 		
