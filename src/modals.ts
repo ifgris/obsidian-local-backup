@@ -41,7 +41,7 @@ export class NewVersionNotifyModal extends Modal {
         void MarkdownRenderer.renderMarkdown(
             markdownStr,
             contentDiv,
-            app.vault.getRoot().path,
+            this.app.vault.getRoot().path,
             new Component(),
         );
     }

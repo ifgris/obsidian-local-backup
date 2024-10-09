@@ -17,10 +17,11 @@
 			"ES5",
 			"ES6",
 			"ES7"
-		]
+		],
+		"types": ["node"]
 	},
 	"include": [
-		"**/*.ts"
+		"src/**/*.ts"
 	],
 	"exclude": [
 		"node_modules"
