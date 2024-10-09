@@ -113,7 +113,7 @@ export default class LocalBackupPlugin extends Plugin {
 		if (this.settings.showRibbonIcon) {
 			addIcon("sidebar-icon", ICON_DATA);
 			this.addRibbonIcon("sidebar-icon", "Run local backup", () => {
-				if (this.settings.showConsoleLog) {
+				if (this.settings.showNotifications) {
 					new Notice("Running local backup...");
 				}
 				this.archiveVaultWithRetryAsync();
@@ -205,7 +205,7 @@ export default class LocalBackupPlugin extends Plugin {
 			if (this.settings.showConsoleLog) {
 				console.log(`Vault backup created: ${backupFilePath}`);
 			}
-			if (this.settings.showConsoleLog) {
+			if (this.settings.showNotifications) {
 				new Notice(`Vault backup created: ${backupFilePath}`);
 			}
 
@@ -248,7 +248,7 @@ export default class LocalBackupPlugin extends Plugin {
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
 			this.intervalId = null;
-			if (this.settings.showConsoleLog) {
+			if (this.settings.showNotifications) {
 				new Notice("Auto backup interval stopped.");
 			}
 		}
