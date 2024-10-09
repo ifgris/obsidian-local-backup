@@ -3,12 +3,9 @@ import { join } from "path";
 import { LocalBackupSettingTab } from "./settings";
 import {
 	replaceDatePlaceholdersWithValues,
+	LocalBackupUtils,
 	getDefaultPath,
 	getDefaultName,
-	createFileByArchiver,
-	createZipByAdmZip,
-	deleteBackupsByLifeCycle,
-	deletePerDayBackups
 } from "./utils";
 import { ICON_DATA } from "./constants";
 import { NewVersionNotifyModal, PromptModal } from "./modals";
@@ -69,6 +66,7 @@ const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 
 export default class LocalBackupPlugin extends Plugin {
 	settings: LocalBackupPluginSettings;
+	utils: LocalBackupUtils;
 	intervalId: NodeJS.Timeout | null = null;
 
 	async onload() {
@@ -76,6 +74,8 @@ export default class LocalBackupPlugin extends Plugin {
 
 		const settingTab = new LocalBackupSettingTab(this.app, this);
 		this.addSettingTab(settingTab);
+
+		await this.loadUtis();
 
 		// startup notice
 		try {
@@ -130,6 +130,10 @@ export default class LocalBackupPlugin extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+	}
+
+	async loadUtis() {
+		this.utils = new LocalBackupUtils(this.app, this);
 	}
 
 	async saveSettings() {
@@ -193,9 +197,9 @@ export default class LocalBackupPlugin extends Plugin {
 
 			if (this.settings.callingArchiverStatus) {
 				backupFilePath = join(savePathValue, `${fileNameWithDateValues}.${this.settings.archiveFileTypeValue}`);
-				await createFileByArchiver(this.settings.archiverTypeValue, archiverPathValue, this.settings.archiveFileTypeValue, vaultPath, backupFilePath);
+				await this.utils.createFileByArchiver(this.settings.archiverTypeValue, archiverPathValue, this.settings.archiveFileTypeValue, vaultPath, backupFilePath);
 			} else {
-				await createZipByAdmZip(vaultPath, backupFilePath);
+				await this.utils.createZipByAdmZip(vaultPath, backupFilePath);
 			}
 
 			if (this.settings.showConsoleLog) {
@@ -205,13 +209,13 @@ export default class LocalBackupPlugin extends Plugin {
 				new Notice(`Vault backup created: ${backupFilePath}`);
 			}
 
-			deleteBackupsByLifeCycle(
+			this.utils.deleteBackupsByLifeCycle(
 				savePathValue,
 				savePathValue,
 				this.settings.fileNameFormatValue,
 				lifecycleValue);
 
-			deletePerDayBackups(
+			this.utils.deletePerDayBackups(
 				savePathValue,
 				savePathValue,
 				this.settings.fileNameFormatValue,

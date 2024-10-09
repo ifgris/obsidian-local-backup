@@ -8,29 +8,29 @@ import "./styles.css";
 
 // Add this type definition
 interface LocalBackupPluginSettings {
-    startupBackupStatus: boolean;
-    lifecycleValue: string;
-    backupsPerDayValue: string;
-    winSavePathValue: string;
-    unixSavePathValue: string;
-    fileNameFormatValue: string;
-    intervalBackupStatus: boolean;
-    backupFrequencyValue: string;
-    maxRetriesValue: string;
-    retryIntervalValue: string;
-    showRibbonIcon: boolean;
-    showConsoleLog: boolean;
+	startupBackupStatus: boolean;
+	lifecycleValue: string;
+	backupsPerDayValue: string;
+	winSavePathValue: string;
+	unixSavePathValue: string;
+	fileNameFormatValue: string;
+	intervalBackupStatus: boolean;
+	backupFrequencyValue: string;
+	maxRetriesValue: string;
+	retryIntervalValue: string;
+	showRibbonIcon: boolean;
+	showConsoleLog: boolean;
 	showNotifications: boolean;
-    oneWayBackupStatus: boolean;
-    oneWayWinSavePathValue: string; // Added for one-way backup Windows path
-    oneWayUnixSavePathValue: string; // Added for one-way backup Unix path
-    oneWayLifecycleValue: string; // Added for one-way backup retention
-    oneWayBackupsPerDayValue: string; // Added for one-way backups per day
-    callingArchiverStatus: boolean;
-    archiverTypeValue: string;
-    archiveFileTypeValue: string;
-    archiverWinPathValue: string;
-    archiverUnixPathValue: string;
+	oneWayBackupStatus: boolean;
+	oneWayWinSavePathValue: string; // Added for one-way backup Windows path
+	oneWayUnixSavePathValue: string; // Added for one-way backup Unix path
+	oneWayLifecycleValue: string; // Added for one-way backup retention
+	oneWayBackupsPerDayValue: string; // Added for one-way backups per day
+	callingArchiverStatus: boolean;
+	archiverTypeValue: string;
+	archiveFileTypeValue: string;
+	archiverWinPathValue: string;
+	archiverUnixPathValue: string;
 }
 
 export class LocalBackupSettingTab extends PluginSettingTab {
@@ -86,7 +86,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
-		
+
 		new Setting(containerEl)
 			.setName("Backups per day")
 			.setDesc(
@@ -191,14 +191,14 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 							);
 							return;
 						}
-						else{
+						else {
 							this.plugin.settings.backupFrequencyValue = value;
 							await this.plugin.saveSettings();
 							await this.plugin.applySettings();
 						}
 					})
 			);
-		
+
 		new Setting(containerEl)
 			.setName("Retry times")
 			.setDesc("Set the retry times after backup failed.")
@@ -214,7 +214,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 							);
 							return;
 						}
-						else{
+						else {
 							this.plugin.settings.maxRetriesValue = value;
 							await this.plugin.saveSettings();
 							await this.plugin.applySettings();
@@ -237,14 +237,14 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 							);
 							return;
 						}
-						else{
+						else {
 							this.plugin.settings.retryIntervalValue = value;
 							await this.plugin.saveSettings();
 							await this.plugin.applySettings();
 						}
 					})
 			);
-		
+
 		new Setting(containerEl)
 			.setName("Show ribbon icon")
 			.setDesc(ribbonIconDesc)
@@ -256,7 +256,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
-		
+
 		new Setting(containerEl)
 			.setName("Show console logs")
 			.setDesc("Enable/Disable console log statements")
@@ -268,17 +268,17 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
-		
+
 		new Setting(containerEl)
-		.setName("Show notifications")
-		.setDesc("Enable/Disable normal notifications, keep exceptions only")
-		.addToggle((toggle: ToggleComponent) =>
-			toggle
-				.setValue(this.plugin.settings.showNotifications)
-				.onChange(async (value: boolean) => {
-					this.plugin.settings.showNotifications = value;
-					await this.plugin.saveSettings();
-				})
+			.setName("Show notifications")
+			.setDesc("Enable/Disable normal notifications, keep exceptions only")
+			.addToggle((toggle: ToggleComponent) =>
+				toggle
+					.setValue(this.plugin.settings.showNotifications)
+					.onChange(async (value: boolean) => {
+						this.plugin.settings.showNotifications = value;
+						await this.plugin.saveSettings();
+					})
 			);
 
 		containerEl.createEl("h3", { text: "One Way Backup Settings" });
@@ -339,7 +339,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
-		
+
 		new Setting(containerEl)
 			.setName("One way backups per day")
 			.setDesc(
@@ -360,7 +360,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
-		
+
 		containerEl.createEl("h3", { text: "File Archiver Settings (Optional)" });
 
 		new Setting(containerEl)
@@ -378,30 +378,30 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Select file archiver")
 			.setDesc("The selected archiver must be installed. eg. 7-Zip for Windows, 7-Zip/p7zip for Unix")
-			.addDropdown((dropDown: DropdownComponent) =>{
+			.addDropdown((dropDown: DropdownComponent) => {
 				dropDown
-				.addOption("sevenZip", "7-Zip")
-				.addOption("winRAR", "WinRAR")
-				.addOption("bandizip", "bandizip")
-				.setValue(this.plugin.settings.archiverTypeValue)
-				.onChange(async (value: string) =>	{
-					this.plugin.settings.archiverTypeValue = value;
-					await this.plugin.saveSettings();
-				});
+					.addOption("sevenZip", "7-Zip")
+					.addOption("winRAR", "WinRAR")
+					.addOption("bandizip", "bandizip")
+					.setValue(this.plugin.settings.archiverTypeValue)
+					.onChange(async (value: string) => {
+						this.plugin.settings.archiverTypeValue = value;
+						await this.plugin.saveSettings();
+					});
 			});
-		
+
 		new Setting(containerEl)
 			.setName("Select archive file type")
-			.addDropdown((dropDown: DropdownComponent) =>{
+			.addDropdown((dropDown: DropdownComponent) => {
 				dropDown
-				.addOption("zip", "zip")
-				.addOption("7z", "7z")
-				.addOption("rar", "rar")
-				.setValue(this.plugin.settings.archiveFileTypeValue)
-				.onChange(async (value: string) =>	{
-					this.plugin.settings.archiveFileTypeValue = value;
-					await this.plugin.saveSettings();
-				});
+					.addOption("zip", "zip")
+					.addOption("7z", "7z")
+					.addOption("rar", "rar")
+					.setValue(this.plugin.settings.archiveFileTypeValue)
+					.onChange(async (value: string) => {
+						this.plugin.settings.archiveFileTypeValue = value;
+						await this.plugin.saveSettings();
+					});
 			});
 
 		new Setting(containerEl)
@@ -415,7 +415,7 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
-		
+
 		new Setting(containerEl)
 			.setName("File archiver path (Unix)")
 			.setDesc("Full path of Archiver. eg. /usr/bin/7z or 7z for Unix.")
