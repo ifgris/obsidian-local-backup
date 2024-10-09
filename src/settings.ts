@@ -20,6 +20,7 @@ interface LocalBackupPluginSettings {
     retryIntervalValue: string;
     showRibbonIcon: boolean;
     showConsoleLog: boolean;
+	showNotifications: boolean;
     oneWayBackupStatus: boolean;
     oneWayWinSavePathValue: string; // Added for one-way backup Windows path
     oneWayUnixSavePathValue: string; // Added for one-way backup Unix path
@@ -266,6 +267,18 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 						this.plugin.settings.showConsoleLog = value;
 						await this.plugin.saveSettings();
 					})
+			);
+		
+		new Setting(containerEl)
+		.setName("Show notifications")
+		.setDesc("Enable/Disable normal notifications, keep exceptions only")
+		.addToggle((toggle: ToggleComponent) =>
+			toggle
+				.setValue(this.plugin.settings.showNotifications)
+				.onChange(async (value: boolean) => {
+					this.plugin.settings.showNotifications = value;
+					await this.plugin.saveSettings();
+				})
 			);
 
 		containerEl.createEl("h3", { text: "One Way Backup Settings" });

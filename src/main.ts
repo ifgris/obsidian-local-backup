@@ -32,6 +32,7 @@ interface LocalBackupPluginSettings {
 	archiverUnixPathValue: string;
 	showRibbonIcon: boolean;
 	showConsoleLog: boolean;
+	showNotifications: boolean;
 	oneWayBackupStatus: boolean;
 	oneWayWinSavePathValue: string;
 	oneWayUnixSavePathValue: string;
@@ -58,6 +59,7 @@ const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	archiverUnixPathValue: "",
 	showRibbonIcon: true,
 	showConsoleLog: false,
+	showNotifications: true,
 	oneWayBackupStatus: false,
 	oneWayWinSavePathValue: "",
 	oneWayUnixSavePathValue: "",
@@ -111,7 +113,9 @@ export default class LocalBackupPlugin extends Plugin {
 		if (this.settings.showRibbonIcon) {
 			addIcon("sidebar-icon", ICON_DATA);
 			this.addRibbonIcon("sidebar-icon", "Run local backup", () => {
-				new Notice("Running local backup...");
+				if (this.settings.showConsoleLog) {
+					new Notice("Running local backup...");
+				}
 				this.archiveVaultWithRetryAsync();
 			});
 		}
@@ -197,7 +201,9 @@ export default class LocalBackupPlugin extends Plugin {
 			if (this.settings.showConsoleLog) {
 				console.log(`Vault backup created: ${backupFilePath}`);
 			}
-			new Notice(`Vault backup created: ${backupFilePath}`);
+			if (this.settings.showConsoleLog) {
+				new Notice(`Vault backup created: ${backupFilePath}`);
+			}
 
 			deleteBackupsByLifeCycle(
 				savePathValue,
@@ -238,7 +244,9 @@ export default class LocalBackupPlugin extends Plugin {
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
 			this.intervalId = null;
-			new Notice("Auto backup interval stopped.");
+			if (this.settings.showConsoleLog) {
+				new Notice("Auto backup interval stopped.");
+			}
 		}
 	}
 
