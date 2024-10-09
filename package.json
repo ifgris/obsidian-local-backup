@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-local-backup",
-	"version": "0.1.7",
+	"version": "0.1.8",
 	"description": "Automatically creates a local backup of the vault.",
 	"main": "main.js",
 	"scripts": {

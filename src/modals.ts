@@ -11,14 +11,16 @@ export class NewVersionNotifyModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        const release = "0.1.7";
+        const release = "0.1.8";
 
         const header = `### New in Local Backup ${release}\n`
         const text = `Thank you for using Local Backup!\n`;
 
         const contentDiv = contentEl.createDiv("local-backup-update-modal");
         const releaseNotes = [
-            "1. Now you can create a specific backup file, which won't delete by the plugin, just type: ctrl + p, local backup."
+            "1. Update default backup function to asynchronous.",
+            "2. Add `Show console logs` and `Show notifications` button in settings page.",
+            "3. Contributed by @Lyqed. Add `One Way Backup Settings` in settings page. Now you can output backups to one more path."
         ]
             .join("\n");
 
