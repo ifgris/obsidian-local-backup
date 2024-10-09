@@ -191,7 +191,7 @@ export default class LocalBackupPlugin extends Plugin {
 				backupFilePath = join(savePathValue, `${fileNameWithDateValues}.${this.settings.archiveFileTypeValue}`);
 				await createFileByArchiver(this.settings.archiverTypeValue, archiverPathValue, this.settings.archiveFileTypeValue, vaultPath, backupFilePath);
 			} else {
-				createZipByAdmZip(vaultPath, backupFilePath);
+				await createZipByAdmZip(vaultPath, backupFilePath);
 			}
 
 			if (this.settings.showConsoleLog) {

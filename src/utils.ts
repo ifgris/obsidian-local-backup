@@ -238,10 +238,16 @@ function generateRegexFromCustomPattern(customPattern: string): RegExp {
  * @param vaultPath 
  * @param backupZipPath 
  */
-export function createZipByAdmZip(vaultPath: string, backupZipPath: string) {
+export async function createZipByAdmZip(vaultPath: string, backupZipPath: string) {
 	// const AdmZip = require("adm-zip");
 	const zip = new AdmZip();
-	zip.addLocalFolder(vaultPath);
+	await zip.addLocalFolderAsync(vaultPath, (success?: boolean, err?: string) => {
+		if (success) {
+			console.log('Folder added to ZIP successfully!');
+		} else {
+			console.error('Error adding folder to ZIP:', err);
+		}
+	});
 	zip.writeZip(backupZipPath);
 }
 
@@ -260,7 +266,7 @@ export async function createFileByArchiver(archiverType: string, archiverPath: s
 			const sevenZipPromise = new Promise<void>((resolve, reject) => {
 				const command = `"${archiverPath}" a "${backupFilePath}" "${vaultPath}"`;
 				console.log(`command: ${command}`);
-				
+
 				exec(command, (error, stdout, stderr) => {
 					if (error) {
 						console.error("Failed to create file by 7-Zip:", error);
@@ -272,12 +278,12 @@ export async function createFileByArchiver(archiverType: string, archiverPath: s
 				});
 			});
 			return sevenZipPromise;
-		
+
 		case "winRAR":
 			const winRARPromise = new Promise<void>((resolve, reject) => {
 				const command = `"${archiverPath}" a -ep1 -rh "${backupFilePath}" "${vaultPath}\*"`;
 				console.log(`command: ${command}`);
-				
+
 				exec(command, (error, stdout, stderr) => {
 					if (error) {
 						console.error("Failed to create file by WinRAR:", error);
@@ -294,7 +300,7 @@ export async function createFileByArchiver(archiverType: string, archiverPath: s
 			const bandizipPromise = new Promise<void>((resolve, reject) => {
 				const command = `"${archiverPath}" c "${backupFilePath}" "${vaultPath}"`;
 				console.log(`command: ${command}`);
-				
+
 				exec(command, (error, stdout, stderr) => {
 					if (error) {
 						console.error("Failed to create file by Bandizip:", error);
@@ -310,5 +316,5 @@ export async function createFileByArchiver(archiverType: string, archiverPath: s
 		default:
 			break;
 	}
-	
+
 }
