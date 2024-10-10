@@ -181,16 +181,8 @@ export class LocalBackupUtils {
 	async createZipByAdmZip(vaultPath: string, backupZipPath: string) {
 		// const AdmZip = require("adm-zip");
 		const zip = new AdmZip();
-		await zip.addLocalFolderAsync(vaultPath, (success?: boolean, err?: string) => {
-			if (success) {
-				if (this.plugin.settings.showConsoleLog) {
-					console.log('Folder added to ZIP successfully!');
-				}
-			} else {
-				console.error('Error adding folder to ZIP:', err);
-			}
-		});
-		zip.writeZip(backupZipPath);
+		zip.addLocalFolder(vaultPath);
+		await zip.writeZipPromise(backupZipPath);
 	}
 
 	/**
