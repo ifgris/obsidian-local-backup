@@ -35,6 +35,7 @@ interface LocalBackupPluginSettings {
 	oneWayUnixSavePathValue: string;
 	oneWayLifecycleValue: string;
 	oneWayBackupsPerDayValue: string;
+	excludedDirectoriesValue: string;
 }
 
 const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
@@ -62,6 +63,7 @@ const DEFAULT_SETTINGS: LocalBackupPluginSettings = {
 	oneWayUnixSavePathValue: "",
 	oneWayLifecycleValue: "3",
 	oneWayBackupsPerDayValue: "3",
+	excludedDirectoriesValue: "",
 };
 
 export default class LocalBackupPlugin extends Plugin {

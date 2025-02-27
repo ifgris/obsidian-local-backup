@@ -16,6 +16,7 @@ Automatically creates a local backup of the vault.
 - Backup by calling archiver (7-Zip, WinRAR, Bandizip)
 - Retry after failures
 - Create specific file
+- Ignore folders and files using wildcards
 
 ## How to use
 

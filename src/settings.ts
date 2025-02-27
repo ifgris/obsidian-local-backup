@@ -31,6 +31,7 @@ interface LocalBackupPluginSettings {
 	archiveFileTypeValue: string;
 	archiverWinPathValue: string;
 	archiverUnixPathValue: string;
+	excludedDirectoriesValue: string; // Added for excluded directories
 }
 
 export class LocalBackupSettingTab extends PluginSettingTab {
@@ -160,6 +161,21 @@ export class LocalBackupSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.fileNameFormatValue)
 					.onChange(async (value: string) => {
 						this.plugin.settings.fileNameFormatValue = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
+			.setName("Excluded directories")
+			.setDesc(
+				"Specify directories to exclude from backup. Use comma-separated list with wildcards (e.g., .git, .trash, node_modules, *.mp4)"
+			)
+			.addText((text: TextComponent) =>
+				text
+					.setPlaceholder(".git, .trash, node_modules")
+					.setValue(this.plugin.settings.excludedDirectoriesValue)
+					.onChange(async (value: string) => {
+						this.plugin.settings.excludedDirectoriesValue = value;
 						await this.plugin.saveSettings();
 					})
 			);
