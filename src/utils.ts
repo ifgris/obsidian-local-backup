@@ -181,7 +181,54 @@ export class LocalBackupUtils {
 	async createZipByAdmZip(vaultPath: string, backupZipPath: string) {
 		// const AdmZip = require("adm-zip");
 		const zip = new AdmZip();
-		zip.addLocalFolder(vaultPath);
+
+		// Get excluded patterns from settings
+		const excludedPatterns = this.plugin.settings.excludedDirectoriesValue
+			.split(',')
+			.map(pattern => pattern.trim())
+			.filter(pattern => pattern.length > 0);
+
+		if (excludedPatterns.length > 0 && this.plugin.settings.showConsoleLog) {
+			console.log(`Excluding patterns: ${excludedPatterns.join(', ')}`);
+		}
+
+		// If no exclusions, add the entire folder
+		if (excludedPatterns.length === 0) {
+			zip.addLocalFolder(vaultPath);
+		} else {
+			// Add files and folders selectively
+			const fs = require('fs-extra');
+			const path = require('path');
+
+			// Function to recursively add files and folders
+			const addFilesRecursively = (dirPath: string, relativePath: string = '') => {
+				const entries = fs.readdirSync(dirPath);
+
+				for (const entry of entries) {
+					const fullPath = path.join(dirPath, entry);
+					const entryRelativePath = path.join(relativePath, entry);
+
+					// Check if this path should be excluded
+					if (this.shouldExcludePath(entryRelativePath, excludedPatterns)) {
+						continue;
+					}
+
+					const stats = fs.statSync(fullPath);
+
+					if (stats.isDirectory()) {
+						// Recursively add subdirectories
+						addFilesRecursively(fullPath, entryRelativePath);
+					} else {
+						// Add file to zip
+						zip.addLocalFile(fullPath, relativePath);
+					}
+				}
+			};
+
+			// Start recursive addition from vault root
+			addFilesRecursively(vaultPath);
+		}
+
 		await zip.writeZipPromise(backupZipPath);
 	}
 
@@ -194,11 +241,40 @@ export class LocalBackupUtils {
 	 * @returns 
 	 */
 	async createFileByArchiver(archiverType: string, archiverPath: string, archiveFileType: string, vaultPath: string, backupFilePath: string) {
+		// Get excluded patterns from settings
+		const excludedPatterns = this.plugin.settings.excludedDirectoriesValue
+			.split(',')
+			.map(pattern => pattern.trim())
+			.filter(pattern => pattern.length > 0);
+
+		// Prepare exclusion parameters for different archivers
+		let exclusionParams = '';
+
+		if (excludedPatterns.length > 0) {
+			if (this.plugin.settings.showConsoleLog) {
+				console.log(`Excluding patterns for ${archiverType}: ${excludedPatterns.join(', ')}`);
+			}
+
+			switch (archiverType) {
+				case "sevenZip":
+					// 7-Zip uses -x!pattern for exclusions
+					exclusionParams = excludedPatterns.map(pattern => `-x!${pattern}`).join(' ');
+					break;
+				case "winRAR":
+					// WinRAR uses -x pattern for exclusions
+					exclusionParams = excludedPatterns.map(pattern => `-x${pattern}`).join(' ');
+					break;
+				case "bandizip":
+					// Bandizip uses -x:pattern for exclusions
+					exclusionParams = excludedPatterns.map(pattern => `-x:"${pattern}"`).join(' ');
+					break;
+			}
+		}
 
 		switch (archiverType) {
 			case "sevenZip":
 				const sevenZipPromise = new Promise<void>((resolve, reject) => {
-					const command = `"${archiverPath}" a "${backupFilePath}" "${vaultPath}"`;
+					const command = `"${archiverPath}" a "${backupFilePath}" "${vaultPath}" ${exclusionParams}`;
 					if (this.plugin.settings.showConsoleLog) {
 						console.log(`command: ${command}`);
 					}
@@ -219,7 +295,7 @@ export class LocalBackupUtils {
 
 			case "winRAR":
 				const winRARPromise = new Promise<void>((resolve, reject) => {
-					const command = `"${archiverPath}" a -ep1 -rh "${backupFilePath}" "${vaultPath}\*"`;
+					const command = `"${archiverPath}" a -ep1 -rh "${backupFilePath}" "${vaultPath}\*" ${exclusionParams}`;
 					if (this.plugin.settings.showConsoleLog) {
 						console.log(`command: ${command}`);
 					}
@@ -240,7 +316,7 @@ export class LocalBackupUtils {
 
 			case "bandizip":
 				const bandizipPromise = new Promise<void>((resolve, reject) => {
-					const command = `"${archiverPath}" c "${backupFilePath}" "${vaultPath}"`;
+					const command = `"${archiverPath}" c "${backupFilePath}" "${vaultPath}" ${exclusionParams}`;
 					if (this.plugin.settings.showConsoleLog) {
 						console.log(`command: ${command}`);
 					}
@@ -263,6 +339,41 @@ export class LocalBackupUtils {
 				break;
 		}
 
+	}
+
+	/**
+	 * Check if a path should be excluded based on the wildcards
+	 * @param filePath The path to check
+	 * @param excludedPatterns Array of patterns to exclude
+	 * @returns True if the path should be excluded, false otherwise
+	 */
+	shouldExcludePath(filePath: string, excludedPatterns: string[]): boolean {
+		if (!excludedPatterns || excludedPatterns.length === 0) {
+			return false;
+		}
+
+		const normalizedPath = filePath.replace(/\\/g, '/');
+
+		for (const pattern of excludedPatterns) {
+			if (!pattern.trim()) continue;
+
+			// Convert glob pattern to regex
+			const regexPattern = pattern.trim()
+				.replace(/\./g, '\\.')   // Escape dots
+				.replace(/\*/g, '.*')    // Convert * to .*
+				.replace(/\?/g, '.');    // Convert ? to .
+
+			const regex = new RegExp(regexPattern, 'i');
+
+			if (regex.test(normalizedPath)) {
+				if (this.plugin.settings.showConsoleLog) {
+					console.log(`Excluding path: ${filePath} (matched pattern: ${pattern})`);
+				}
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }
